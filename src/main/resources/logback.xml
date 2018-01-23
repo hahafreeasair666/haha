@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2006-2017, Yunnan Sanjiu Network technology Co., Ltd.
+
+    All rights reserved.
+
+-->
+<configuration debug="false" scan="true" scanPeriod="1000 seconds">
+    <!-- Output to Console -->
+    <properties>
+        <Property name="PID">????</Property>
+        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%xwEx
+        </Property>
+    </properties>
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %level %c:%L - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <!-- 打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和  OFF 默认是DEBUG -->
+    <root level="WARN">
+        <appender-ref ref="Console" />
+    </root>
+    <logger name="com.ch999.haha" level="DEBUG" />
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="com.baomidou" level="INFO"/>
+</configuration>
