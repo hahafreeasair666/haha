@@ -2,7 +2,7 @@ package com.ch999.haha.admin.controller;
 
 
 import com.ch999.common.util.vo.Result;
-import com.ch999.haha.admin.Component.UserComponent;
+import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.entity.UserInfo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

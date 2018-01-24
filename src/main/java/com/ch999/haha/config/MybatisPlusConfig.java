@@ -197,8 +197,8 @@ public class MybatisPlusConfig {
 
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("root");
-        dsc.setUrl("jdbc:mysql://120.79.160.214:3306/hahaapi?characterEncoding=utf8");
+        dsc.setPassword("a123456+");
+        dsc.setUrl("jdbc:mysql://gz-cdb-mfro5399.sql.tencentcdb.com:63292/hahaapi?characterEncoding=utf8");
 
         mpg.setDataSource(dsc);
 
@@ -211,7 +211,7 @@ public class MybatisPlusConfig {
         // strategy.setExclude(new String[] { "productinfo", "view_product_spec"
         // }); // 排除生成的表
 
-        strategy.setInclude(new String[]{"news","newscollections","userfans","userinfo"}); //
+        strategy.setInclude(new String[]{"animal"}); //
         // 需要生成的表
 
         // 字段名生成策略

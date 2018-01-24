@@ -1,4 +1,4 @@
-package com.ch999.haha.admin.Component;
+package com.ch999.haha.admin.component;
 
 import com.ch999.haha.admin.document.redis.UserBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
@@ -14,6 +14,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
+/**
+ * @author hahalala
+ */
 @Component
 public class UserComponent {
 

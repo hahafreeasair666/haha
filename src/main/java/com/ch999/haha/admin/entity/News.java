@@ -1,10 +1,15 @@
 package com.ch999.haha.admin.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -15,6 +20,9 @@ import java.io.Serializable;
  * @author 
  * @since 2018-01-22
  */
+@Getter
+@Setter
+@ToString
 @TableName("news")
 public class News extends Model<News> {
 
@@ -62,105 +70,21 @@ public class News extends Model<News> {
      */
 	private Integer zan;
 
+	/**
+	 * 用于区分是猫类还是狗类的，狗1，猫2
+	 */
+	@TableField("animaltype")
+	private Integer animalType;
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getBody() {
-		return body;
-	}
-
-	public void setBody(String body) {
-		this.body = body;
-	}
-
-	public String getPicture() {
-		return picture;
-	}
-
-	public void setPicture(String picture) {
-		this.picture = picture;
-	}
-
-	public Integer getCreateuserid() {
-		return createuserid;
-	}
-
-	public void setCreateuserid(Integer createuserid) {
-		this.createuserid = createuserid;
-	}
-
-	public Date getCreatetime() {
-		return createtime;
-	}
-
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
-
-	public String getCreateplace() {
-		return createplace;
-	}
-
-	public void setCreateplace(String createplace) {
-		this.createplace = createplace;
-	}
-
-	public Date getEdittime() {
-		return edittime;
-	}
-
-	public void setEdittime(Date edittime) {
-		this.edittime = edittime;
-	}
-
-	public Boolean isIsdel() {
-		return isdel;
-	}
-
-	public void setIsdel(Boolean isdel) {
-		this.isdel = isdel;
-	}
-
-	public Integer getZan() {
-		return zan;
-	}
-
-	public void setZan(Integer zan) {
-		this.zan = zan;
-	}
+	/**
+	 * 具体猫狗种类的id
+	 */
+	@TableField("dogorcattype")
+	private Integer dogOrCatType;
 
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
 
-	@Override
-	public String toString() {
-		return "News{" +
-			"id=" + id +
-			", title=" + title +
-			", body=" + body +
-			", picture=" + picture +
-			", createuserid=" + createuserid +
-			", createtime=" + createtime +
-			", createplace=" + createplace +
-			", edittime=" + edittime +
-			", isdel=" + isdel +
-			", zan=" + zan +
-			"}";
-	}
 }

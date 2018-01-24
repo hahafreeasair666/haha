@@ -160,6 +160,13 @@
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 		<!--Mongo end -->
+
+		<!-- 解析html -->
+		<dependency>
+			<groupId>cn.wanghaomiao</groupId>
+			<artifactId>JsoupXpath</artifactId>
+			<version>0.3.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
