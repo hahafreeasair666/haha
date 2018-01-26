@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author 
- * @since 2018-01-22
+ * @since 2018-01-25
  */
 @Service
 public class NewsCollectionsServiceImpl extends ServiceImpl<NewsCollectionsMapper, NewsCollections> implements NewsCollectionsService {

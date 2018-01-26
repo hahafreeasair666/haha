@@ -4,7 +4,10 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -16,10 +19,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching
 @EnableTransactionManagement
 @EnableRedisRepositories(basePackages = "com.ch999.haha.admin.repository.redis")
-@SpringBootApplication
-public class HahaapiApplication {
+@EnableMongoRepositories(basePackages = "com.ch999.haha.admin.repository.mongo")
+@SpringBootApplication(exclude = {MongoAutoConfiguration.class,MongoDataAutoConfiguration.class})
+public class HaHaApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HahaapiApplication.class, args);
+		SpringApplication.run(HaHaApiApplication.class, args);
 	}
 }

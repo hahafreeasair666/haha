@@ -1,5 +1,6 @@
 package com.ch999.haha.admin.entity;
 
+import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
@@ -11,14 +12,15 @@ import java.io.Serializable;
  * </p>
  *
  * @author 
- * @since 2018-01-23
+ * @since 2018-01-25
  */
+@TableName("animal")
 public class Animal extends Model<Animal> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 自增主键
+     * 自增主键，猫狗id
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
@@ -72,7 +74,7 @@ public class Animal extends Model<Animal> {
 		this.pic = pic;
 	}
 
-	public Integer isType() {
+	public Integer getType() {
 		return type;
 	}
 

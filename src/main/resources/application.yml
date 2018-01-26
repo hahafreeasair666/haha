@@ -23,8 +23,8 @@ spring:
   cache:
       type: redis
   redis:
-      host: 120.79.160.214
-      password:
+      host: 120.79.72.230
+      password: mengxiang
       pool:
         max-active: 16
         max-idle: 16
@@ -40,14 +40,17 @@ spring:
   http:
     multipart:
       max-file-size: 10MB
+  data:
+    mongodb:
+      uri: mongodb://120.79.160.214:27017/local
 
 redis1:
   host: 120.79.72.230
   port: 6379
   password: mengxiang
 
-mongodb:
-  uri: mongodb://120.79.160.214:27017/local
+#mongodb:
+#  uri: mongodb://120.79.160.214:27017/local
 #    schema: classpath:SQL/*.sql
 
 mybatis:
@@ -56,4 +59,4 @@ mybatis:
 
 
 logging:
-  config: classpath:logback.xml
+  config: classpath:log4j2-dev.xml

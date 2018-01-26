@@ -40,7 +40,6 @@ import javax.sql.DataSource;
 import java.io.File;
 
 @Configuration
-@MapperScan("com.example.demo.*.mapper*")
 public class MybatisPlusConfig {
 
     @Autowired
@@ -211,11 +210,13 @@ public class MybatisPlusConfig {
         // strategy.setExclude(new String[] { "productinfo", "view_product_spec"
         // }); // 排除生成的表
 
-        strategy.setInclude(new String[]{"animal"}); //
+        strategy.setInclude(new String[]{"animal","news","newscollections","userfans","userinfo"}); //
         // 需要生成的表
 
         // 字段名生成策略
         strategy.setNaming(NamingStrategy.underline_to_camel);
+        //逻辑删除字段
+        strategy.setLogicDeleteFieldName("isdel");
         // 自定义实体父类
         // strategy.setSuperEntityClass("com.fcs.demo.TestEntity");
         // 自定义实体，公共字段

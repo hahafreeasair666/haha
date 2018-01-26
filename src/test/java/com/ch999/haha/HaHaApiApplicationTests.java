@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class HahaapiApplicationTests {
+public class HaHaApiApplicationTests {
 
 
     private final String URL = "https://baike.baidu.com/item/%s";

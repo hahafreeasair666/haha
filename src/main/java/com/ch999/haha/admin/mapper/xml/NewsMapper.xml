@@ -14,6 +14,9 @@
 		<result column="edittime" property="edittime" />
 		<result column="isdel" property="isdel" />
 		<result column="zan" property="zan" />
+		<result column="animaltype" property="animaltype" />
+		<result column="dogorcattype" property="dogorcattype" />
+		<result column="isadoptionnews" property="isadoptionnews" />
 	</resultMap>
 
 </mapper>

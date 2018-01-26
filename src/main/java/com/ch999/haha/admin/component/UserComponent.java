@@ -1,5 +1,6 @@
 package com.ch999.haha.admin.component;
 
+import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.ch999.haha.admin.document.redis.UserBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.entity.UserInfo;
@@ -56,8 +57,8 @@ public class UserComponent {
         }
     }
 
-    private String getAuthorization(Integer userId, Boolean isLogonFree) {
-        final String authorization = UUID.randomUUID().toString();
+    public String getAuthorization(Integer userId, Boolean isLogonFree) {
+        final String authorization  = IdWorker.get32UUID();
         UserBO userBO = new UserBO(USERID_PIX + authorization, userId);
         if (isLogonFree) {
             userBO.setLiveTime(604800);

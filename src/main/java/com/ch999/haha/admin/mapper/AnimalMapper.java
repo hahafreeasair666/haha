@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  * </p>
  *
  * @author 
- * @since 2018-01-23
+ * @since 2018-01-25
  */
 public interface AnimalMapper extends BaseMapper<Animal> {
 
