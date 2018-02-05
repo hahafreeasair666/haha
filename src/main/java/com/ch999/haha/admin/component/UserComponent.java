@@ -1,12 +1,16 @@
 package com.ch999.haha.admin.component;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.toolkit.IdWorker;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
 import com.ch999.haha.admin.document.redis.UserBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.entity.UserInfo;
 import com.ch999.haha.admin.repository.redis.UserBORepository;
 import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
 import com.ch999.haha.admin.service.UserInfoService;
+import com.ch999.haha.admin.vo.RegisterVO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -46,19 +50,19 @@ public class UserComponent {
             return new UserInfo();
         } else {
             UserInfoBO one = userInfoBORepository.findOne(userId);
-            if(one == null) {
+            if (one == null) {
                 UserInfo userInfo = userInfoService.selectById(userId);
-                UserInfoBO userInfoBO = new UserInfoBO(userId,userInfo);
+                UserInfoBO userInfoBO = new UserInfoBO(userId, userInfo);
                 userInfoBORepository.save(userInfoBO);
                 return userInfo != null ? userInfo : new UserInfo();
-            }else {
+            } else {
                 return one.getUserInfo();
             }
         }
     }
 
     public String getAuthorization(Integer userId, Boolean isLogonFree) {
-        final String authorization  = IdWorker.get32UUID();
+        final String authorization = IdWorker.get32UUID();
         UserBO userBO = new UserBO(USERID_PIX + authorization, userId);
         if (isLogonFree) {
             userBO.setLiveTime(604800);
@@ -72,5 +76,46 @@ public class UserComponent {
         String token = request.getHeader(AUTHORIZATION);
         UserBO user = userBORepository.findOne(USERID_PIX + token);
         return user == null ? -1 : user.getUserId();
+    }
+
+    public Boolean loginOut() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader(AUTHORIZATION);
+        if (StringUtils.isEmpty(token)) {
+            return false;
+        }
+        userBORepository.delete(USERID_PIX + token);
+        UserBO user = userBORepository.findOne(USERID_PIX + token);
+        return user == null;
+    }
+
+    public Integer userRegister(RegisterVO registerVO) {
+        if (!registerVO.getPwd1().equals(registerVO.getPwd2())) {
+            return null;
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsername(registerVO.getUserName());
+        userInfo.setMobile(registerVO.getMobile());
+        userInfo.setPwd(registerVO.getPwd1());
+        userInfoService.insert(userInfo);
+        Wrapper<UserInfo> wrapper = new EntityWrapper<>();
+        wrapper.eq("mobile", userInfo.getMobile());
+        UserInfo userInfo1 = userInfoService.selectOne(wrapper);
+        return userInfo1.getId();
+    }
+
+    /**
+     * 对注册用户的用户名和手机号进行是否可用的校验
+     * @param type
+     * @param checking
+     * @return
+     */
+    public Boolean checkCanUse(String type, String checking) {
+        Wrapper<UserInfo> wrapper = new EntityWrapper<>();
+        if("mobile".equals(type)) {
+            return userInfoService.selectList(wrapper).parallelStream().filter(li -> li.getMobile().equals(checking)).count()==0;
+        }else {
+            return userInfoService.selectList(wrapper).parallelStream().filter(li -> li.getUsername().equals(checking)).count()==0;
+        }
     }
 }
