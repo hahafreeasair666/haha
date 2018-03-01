@@ -1,10 +1,15 @@
 package com.ch999.haha.admin.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -12,9 +17,12 @@ import java.io.Serializable;
  * 
  * </p>
  *
- * @author 
+ * @author haha
  * @since 2018-01-25
  */
+@Setter
+@Getter
+@ToString
 @TableName("news")
 public class News extends Model<News> {
 
@@ -40,23 +48,28 @@ public class News extends Model<News> {
     /**
      * 作者id
      */
-	private Integer createuserid;
+    @TableField("createuserid")
+	private Integer createUserId;
     /**
      * 发布时间
      */
-	private Date createtime;
+    @TableField("createtime")
+	private Date createTime;
     /**
      * 发布地点（存名字吧不然还得查表效率低）
      */
-	private String createplace;
+    @TableField("createplace")
+	private String createPlace;
     /**
      * 最后编辑时间（发布时间以它为准）
      */
-	private Date edittime;
+    @TableField("edittime")
+	private Date editTime;
     /**
      * 是否删除
      */
-	private Boolean isdel;
+    @TableField("isdel")
+	private Boolean isDel;
     /**
      * 点赞数
      */
@@ -64,142 +77,22 @@ public class News extends Model<News> {
     /**
      * 用于区分是猫类还是狗类的，狗1，猫2
      */
-	private Integer animaltype;
+    @TableField("animaltype")
+	private Integer animalType;
     /**
      * 具体猫狗种类的id
      */
-	private Integer dogorcattype;
+    @TableField("dogorcattype")
+	private Integer dogOrCatType;
     /**
      * 是否是收养信息
      */
-	private Boolean isadoptionnews;
-
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getBody() {
-		return body;
-	}
-
-	public void setBody(String body) {
-		this.body = body;
-	}
-
-	public String getPicture() {
-		return picture;
-	}
-
-	public void setPicture(String picture) {
-		this.picture = picture;
-	}
-
-	public Integer getCreateuserid() {
-		return createuserid;
-	}
-
-	public void setCreateuserid(Integer createuserid) {
-		this.createuserid = createuserid;
-	}
-
-	public Date getCreatetime() {
-		return createtime;
-	}
-
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
-
-	public String getCreateplace() {
-		return createplace;
-	}
-
-	public void setCreateplace(String createplace) {
-		this.createplace = createplace;
-	}
-
-	public Date getEdittime() {
-		return edittime;
-	}
-
-	public void setEdittime(Date edittime) {
-		this.edittime = edittime;
-	}
-
-	public Boolean isIsdel() {
-		return isdel;
-	}
-
-	public void setIsdel(Boolean isdel) {
-		this.isdel = isdel;
-	}
-
-	public Integer getZan() {
-		return zan;
-	}
-
-	public void setZan(Integer zan) {
-		this.zan = zan;
-	}
-
-	public Integer getAnimaltype() {
-		return animaltype;
-	}
-
-	public void setAnimaltype(Integer animaltype) {
-		this.animaltype = animaltype;
-	}
-
-	public Integer getDogorcattype() {
-		return dogorcattype;
-	}
-
-	public void setDogorcattype(Integer dogorcattype) {
-		this.dogorcattype = dogorcattype;
-	}
-
-	public Boolean isIsadoptionnews() {
-		return isadoptionnews;
-	}
-
-	public void setIsadoptionnews(Boolean isadoptionnews) {
-		this.isadoptionnews = isadoptionnews;
-	}
+    @TableField("isadoptionnews")
+	private Boolean isAdoptionNews;
 
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
 
-	@Override
-	public String toString() {
-		return "News{" +
-			"id=" + id +
-			", title=" + title +
-			", body=" + body +
-			", picture=" + picture +
-			", createuserid=" + createuserid +
-			", createtime=" + createtime +
-			", createplace=" + createplace +
-			", edittime=" + edittime +
-			", isdel=" + isdel +
-			", zan=" + zan +
-			", animaltype=" + animaltype +
-			", dogorcattype=" + dogorcattype +
-			", isadoptionnews=" + isadoptionnews +
-			"}";
-	}
 }

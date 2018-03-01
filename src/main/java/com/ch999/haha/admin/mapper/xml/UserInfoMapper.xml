@@ -2,13 +2,95 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ch999.haha.admin.mapper.UserInfoMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.UserInfo">
-		<id column="id" property="id" />
-		<result column="username" property="username" />
-		<result column="pwd" property="pwd" />
-		<result column="mobile" property="mobile" />
-		<result column="openid" property="openid" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.UserInfo">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="pwd" property="pwd"/>
+        <result column="mobile" property="mobile"/>
+        <result column="openid" property="openid"/>
+    </resultMap>
+
+    <select id="selectUserInfoCount" resultType="com.ch999.haha.admin.vo.mappervo.UserCenterInfoCountVO">
+		SELECT
+	t.createuserid AS userid,
+	CASE
+WHEN t.zancount IS NULL
+OR t.zancount = '' THEN
+	0
+WHEN t.zancount IS NOT NULL THEN
+	t.zancount
+END AS zan,
+ CASE
+WHEN f.fans IS NULL
+OR f.fans = '' THEN
+	0
+WHEN f.fans IS NOT NULL THEN
+	f.fans
+END AS fans,
+ CASE
+WHEN g.guan IS NULL
+OR g.guan = '' THEN
+	0
+WHEN g.guan IS NOT NULL THEN
+	g.guan
+END AS follow,
+ CASE
+WHEN c.collections IS NULL
+OR c.collections = '' THEN
+	0
+WHEN c.collections IS NOT NULL THEN
+	c.collections
+END AS collections,
+ CASE
+WHEN t.releases IS NULL
+OR t.releases = '' THEN
+	0
+WHEN t.releases IS NOT NULL THEN
+	t.releases
+END AS releases
+FROM
+	(
+		SELECT
+			createuserid,
+			sum(zan) AS zancount,
+			count(1) AS releases
+		FROM
+			news
+		WHERE
+			createuserid = #{userId}
+		AND isdel = 0
+	) t
+LEFT JOIN (
+	SELECT
+		uf.userid2,
+		COUNT(1) AS fans
+	FROM
+		userfans uf
+	WHERE
+		uf.userid2 = #{userId}
+	AND isdel = 0
+) f ON t.createuserid = f.userid2
+LEFT JOIN (
+	SELECT
+		uf.userid1,
+		COUNT(1) AS guan
+	FROM
+		userfans uf
+	WHERE
+		uf.userid1 = #{userId}
+	AND isdel = 0
+) g ON t.createuserid = g.userid1
+LEFT JOIN (
+	SELECT
+		nc.userid,
+		count(1) AS collections
+	FROM
+		newscollections nc
+	WHERE
+		nc.userid = #{userId}
+	AND isdel = 0
+) c ON c.userid = t.createuserid
+	</select>
 
 </mapper>

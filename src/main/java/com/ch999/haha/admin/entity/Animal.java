@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -14,6 +18,9 @@ import java.io.Serializable;
  * @author 
  * @since 2018-01-25
  */
+@Getter
+@Setter
+@ToString
 @TableName("animal")
 public class Animal extends Model<Animal> {
 
@@ -41,60 +48,9 @@ public class Animal extends Model<Animal> {
      */
 	private Integer type;
 
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getBody() {
-		return body;
-	}
-
-	public void setBody(String body) {
-		this.body = body;
-	}
-
-	public String getPic() {
-		return pic;
-	}
-
-	public void setPic(String pic) {
-		this.pic = pic;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
 
-	@Override
-	public String toString() {
-		return "Animal{" +
-			"id=" + id +
-			", name=" + name +
-			", body=" + body +
-			", pic=" + pic +
-			", type=" + type +
-			"}";
-	}
 }

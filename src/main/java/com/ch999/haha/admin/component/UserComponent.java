@@ -44,19 +44,19 @@ public class UserComponent {
      *
      * @return
      */
-    public UserInfo getLoginUser() {
+    public UserInfoBO getLoginUser() {
         Integer userId = getUserId();
         if (userId == -1) {
-            return new UserInfo();
+            return new UserInfoBO();
         } else {
             UserInfoBO one = userInfoBORepository.findOne(userId);
             if (one == null) {
                 UserInfo userInfo = userInfoService.selectById(userId);
                 UserInfoBO userInfoBO = new UserInfoBO(userId, userInfo);
                 userInfoBORepository.save(userInfoBO);
-                return userInfo != null ? userInfo : new UserInfo();
+                return userInfo != null ? userInfoBO : new UserInfoBO();
             } else {
-                return one.getUserInfo();
+                return one;
             }
         }
     }

@@ -49,9 +49,6 @@ redis1:
   port: 6379
   password: mengxiang
 
-#mongodb:
-#  uri: mongodb://120.79.160.214:27017/local
-#    schema: classpath:SQL/*.sql
 
 mybatis:
   mapper-locations: classpath:com/ch999/haha/admin/mapper/xml/*Mapper.xml

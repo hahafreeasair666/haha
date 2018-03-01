@@ -1,9 +1,14 @@
 package com.ch999.haha.admin.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -14,6 +19,9 @@ import java.io.Serializable;
  * @author 
  * @since 2018-01-25
  */
+@ToString
+@Setter
+@Getter
 @TableName("newscollections")
 public class NewsCollections extends Model<NewsCollections> {
 
@@ -27,61 +35,23 @@ public class NewsCollections extends Model<NewsCollections> {
     /**
      * 收藏者id
      */
-	private Integer userid;
+    @TableField("userid")
+	private Integer userId;
     /**
      * 头条id
      */
-	private Integer newid;
+    @TableField("newid")
+	private Integer newId;
     /**
      * 是否收藏
      */
-	private Boolean isdel;
+    @TableField("isdel")
+	private Boolean isDel;
 
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Integer getUserid() {
-		return userid;
-	}
-
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
-
-	public Integer getNewid() {
-		return newid;
-	}
-
-	public void setNewid(Integer newid) {
-		this.newid = newid;
-	}
-
-	public Boolean isIsdel() {
-		return isdel;
-	}
-
-	public void setIsdel(Boolean isdel) {
-		this.isdel = isdel;
-	}
 
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
 
-	@Override
-	public String toString() {
-		return "NewsCollections{" +
-			"id=" + id +
-			", userid=" + userid +
-			", newid=" + newid +
-			", isdel=" + isdel +
-			"}";
-	}
 }

@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.ch999.**.mapper*")
 @EnableAutoConfiguration
 @EnableCaching
+@EnableScheduling
 @EnableTransactionManagement
 @EnableRedisRepositories(basePackages = "com.ch999.haha.admin.repository.redis")
 @EnableMongoRepositories(basePackages = "com.ch999.haha.admin.repository.mongo")
