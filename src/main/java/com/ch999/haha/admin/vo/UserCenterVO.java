@@ -69,14 +69,4 @@ public class UserCenterVO {
         return description;
     }
 
-    /**
-     * 默认头像
-     * @return
-     */
-    public String getAvatar() {
-        if(StringUtils.isBlank(avatar)){
-            avatar = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2376638784,1470858270&fm=27&gp=0.jpg";
-        }
-        return avatar;
-    }
 }

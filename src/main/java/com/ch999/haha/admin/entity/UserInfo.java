@@ -68,4 +68,10 @@ public class UserInfo extends Model<UserInfo> {
 		return this.id;
 	}
 
+	public String getPicPath() {
+		if(picPath == null){
+			picPath = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2376638784,1470858270&fm=27&gp=0.jpg";
+		}
+		return picPath;
+	}
 }
