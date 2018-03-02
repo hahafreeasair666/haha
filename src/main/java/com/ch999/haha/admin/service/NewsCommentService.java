@@ -1,6 +1,8 @@
 package com.ch999.haha.admin.service;
 
+import com.ch999.haha.admin.vo.CommentReplyVO;
 import com.ch999.haha.admin.vo.NewsCommentVO;
+import com.ch999.haha.common.PageableVo;
 import org.springframework.data.domain.Pageable;
 
 
@@ -29,9 +31,17 @@ public interface NewsCommentService {
      * 评论列表
      * @param newsId 新闻id
      * @param pageable 分页对象
+     * @param userId 用户id
      * @return 返回
      */
     NewsCommentVO getNewsCommentList(Integer newsId,Pageable pageable,Integer userId);
 
-    //回复列表
+    /**
+     *
+     * @param commentId 评论id
+     * @param pageable 分页对象
+     * @param userId 用户id
+     * @return
+     */
+    CommentReplyVO getCommentReplies(String commentId, PageableVo pageable, Integer userId);
 }

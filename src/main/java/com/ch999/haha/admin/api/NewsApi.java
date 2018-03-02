@@ -4,7 +4,7 @@ import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.vo.NewsCommentVO;
-import com.ch999.haha.admin.vo.NewsReplyVO;
+import com.ch999.haha.admin.vo.CommentReplyVO;
 import com.ch999.haha.common.PageableVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +61,7 @@ public class NewsApi {
 
     @GetMapping("/getNewsComment/v1")
     public Result<NewsCommentVO> getNewsComment(Integer newsId, PageableVo pageableVo) {
+        //之前还要校验一下此新闻是否存在
         if (pageableVo.getSort() == null) {
             pageableVo.setSort(new Sort(Sort.Direction.DESC, "createTime"));
         }
@@ -71,8 +72,15 @@ public class NewsApi {
         return Result.success(newsCommentList);
     }
 
-    @GetMapping("/getNewsReply/v1")
-    public Result<NewsReplyVO> getNewsReply(String commentId, PageableVo pageableVo) {
-        return null;
+    @GetMapping("/getCommentReply/v1")
+    public Result<CommentReplyVO> getNewsReply(String commentId, PageableVo pageableVo) {
+        if(StringUtils.isBlank(commentId)){
+            return Result.paramError("error","请传入评论id");
+        }
+        CommentReplyVO commentReplies = newsCommentService.getCommentReplies(commentId, pageableVo, userComponent.getLoginUser().getId());
+        if(commentReplies.getNewsCommentAndReply() == null){
+            return Result.error("error","该评论不存在或已删除");
+        }
+        return Result.success(commentReplies);
     }
 }

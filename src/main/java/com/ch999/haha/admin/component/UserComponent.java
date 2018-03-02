@@ -89,6 +89,11 @@ public class UserComponent {
         return user == null;
     }
 
+    /**
+     * 用户注册
+     * @param registerVO
+     * @return
+     */
     public Integer userRegister(RegisterVO registerVO) {
         if (!registerVO.getPwd1().equals(registerVO.getPwd2())) {
             return null;
