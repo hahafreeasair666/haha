@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -86,7 +87,6 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             //评论中评论的回复只显示未删除的点赞最多的三条
             if (li.getReplies().size() > 3) {
                 li.setReplies(li.getReplies().stream()
-                        //这里过滤后可能会空掉，报npe
                         .filter(de -> !de.getIsDel())
                         .sorted(Comparator.comparing(NewsCommentBO.Reply::getZan).reversed()).collect(Collectors.toList())
                         .subList(0, 3));
@@ -113,8 +113,12 @@ public class NewsCommentServiceImpl implements NewsCommentService {
 
     @Override
     public CommentReplyVO getCommentReplies(String commentId, PageableVo pageable, Integer userId) {
+        StopWatch stopWatch = new StopWatch("mongo");
+        stopWatch.start("查询");
         CommentReplyVO commentReplyVO = new CommentReplyVO(newsCommentRepository.findOne(commentId), pageable);
+        stopWatch.stop();
         if (commentReplyVO.getNewsCommentAndReply() != null) {
+            stopWatch.start("评论处理");
             UserInfo userInfo = userInfoService.selectById(commentReplyVO.getNewsCommentAndReply().getUserId());
             commentReplyVO.getNewsCommentAndReply().setAvatar(userInfo.getPicPath());
             commentReplyVO.getNewsCommentAndReply().setUserName(userInfo.getUsername());
@@ -128,10 +132,11 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             } else {
                 commentReplyVO.getNewsCommentAndReply().setIsPraised(false);
             }
+            stopWatch.stop();
             if (CollectionUtils.isNotEmpty(commentReplyVO.getNewsCommentAndReply().getReplies())) {
+                stopWatch.start("回复分页处理");
                 commentReplyVO.getNewsCommentAndReply().setReplies(
                         commentReplyVO.getNewsCommentAndReply().getReplies().stream()
-                                //这里过滤后可能会空掉，报npe
                                 .filter(li -> !li.getIsDel())
                                 .sorted(Comparator.comparing(NewsCommentBO.Reply::getZan).reversed())
                                 .collect(Collectors.toList()));
@@ -149,10 +154,13 @@ public class NewsCommentServiceImpl implements NewsCommentService {
                 } else {
                     commentReplyVO.getNewsCommentAndReply().setReplies(new ArrayList<>());
                 }
+                stopWatch.stop();
+                stopWatch.start("数据库查询操作");
                 commentReplyVO.getNewsCommentAndReply().getReplies().forEach(li -> handleReplies(li, userId));
+                stopWatch.stop();
             }
-
         }
+        System.out.println(stopWatch.prettyPrint());
         return commentReplyVO;
     }
 
@@ -164,8 +172,8 @@ public class NewsCommentServiceImpl implements NewsCommentService {
         re.setToUserName(toUserInfo.getUsername());
         if (re.getZan() > 0 && userId != null) {
             CommentZanBO toZanInfo = commentZanRepository.findOne(re.getReplyId());
-            if (toZanInfo != null && toZanInfo.getZanUserList().parallelStream().anyMatch(z -> z.equals(userId))) {
-                re.setIsPraised(true);
+            if (toZanInfo != null ) {
+                re.setIsPraised(toZanInfo.getZanUserList().parallelStream().anyMatch(z -> z.equals(userId)));
             } else {
                 re.setIsPraised(false);
             }
