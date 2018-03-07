@@ -1,5 +1,6 @@
 package com.ch999.haha.admin.service;
 
+import com.ch999.haha.admin.entity.Imgs;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -7,5 +8,5 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface ImgService {
 
-    Object uploadImg(MultipartFile file);
+    Imgs uploadImg(MultipartFile file);
 }

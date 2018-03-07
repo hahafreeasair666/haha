@@ -3,8 +3,10 @@ package com.ch999.haha.admin.api;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
+import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.UserInfoService;
+import com.ch999.haha.admin.service.impl.ImgServiceImpl;
 import com.ch999.haha.admin.vo.UserCenterVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +47,16 @@ public class UserInfoApi {
 
     @PostMapping("/test")
     public Result test(MultipartFile file){
-        imgService.uploadImg(file);
-        return null;
+        if(file == null){
+            return Result.error("error","请选择要上传的图片");
+        }else if(!ImgServiceImpl.checkIsImg(file.getOriginalFilename())){
+            return Result.error("error","图片格式不正确");
+        }
+        Imgs imgs = imgService.uploadImg(file);
+        if(imgs == null){
+            return Result.error("error","图片上传失败");
+        }
+        return Result.success(imgs);
     }
+
 }
