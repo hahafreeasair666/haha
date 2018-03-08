@@ -20,17 +20,36 @@ public class DogAndCatApi {
     private DogAndCatComponent dogAndCatComponent;
 
     /**
-     * 1狗2猫
+     * 1狗2猫  用于猫狗列表展示的
      * @param type
      * @return
      */
-    @GetMapping("/getAnimalInfo")
+    @GetMapping("/getAnimalInfo/v1")
     public Result getAllDog(Integer type){
-        return Result.success(dogAndCatComponent.getAnimalList(type));
+        if(type == null){
+            return Result.error("error","请选择类型");
+        }
+        return Result.success(dogAndCatComponent.getAnimalList(type,true));
     }
 
-    @GetMapping("/getAnimalName")
+    @GetMapping("/getAnimalDetailById/v1")
+    public Result getAnimalDetailById(Integer id){
+        if(id == null){
+            return Result.error("error","请选择具体动物");
+        }
+        return Result.success(dogAndCatComponent.getAnimalDetail(id));
+    }
+
+    /**
+     * 用于发布消息时的猫狗种类的下拉列表
+     * @param type
+     * @return
+     */
+    @GetMapping("/getAnimalName/v1")
     public Result getAllCat(Integer type){
-        return Result.success(dogAndCatComponent.getAnimalsName(type));
+        if(type == null){
+            return Result.error("error","请选择类型");
+        }
+        return Result.success(dogAndCatComponent.getAnimalsName(type,false));
     }
 }

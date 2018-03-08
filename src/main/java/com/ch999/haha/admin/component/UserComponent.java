@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
 import com.ch999.haha.admin.document.redis.UserBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
+import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.entity.UserInfo;
 import com.ch999.haha.admin.repository.redis.UserBORepository;
 import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
+import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.vo.RegisterVO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +40,9 @@ public class UserComponent {
 
     @Resource
     private UserInfoBORepository userInfoBORepository;
+
+    @Resource
+    private ImgService imgService;
 
 
     /**
@@ -121,6 +127,22 @@ public class UserComponent {
             return userInfoService.selectList(wrapper).parallelStream().filter(li -> li.getMobile().equals(checking)).count()==0;
         }else {
             return userInfoService.selectList(wrapper).parallelStream().filter(li -> li.getUsername().equals(checking)).count()==0;
+        }
+    }
+
+    public Boolean updateUserAvatar(Integer userId,MultipartFile file){
+        Imgs imgs = imgService.uploadImg(file);
+        if(imgs == null){
+            return false;
+        }else {
+            UserInfo userInfo = new UserInfo(userId);
+            userInfo.setPicPath(imgs.getImgUrl());
+            userInfoService.updateById(userInfo);
+            UserInfo userInfo1 = userInfoService.selectById(userId);
+            UserInfoBO one = userInfoBORepository.findOne(userId);
+            one.setUserInfo(userInfo1);
+            userInfoBORepository.save(one);
+            return true;
         }
     }
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class UserInfo extends Model<UserInfo> {
 
     private static final long serialVersionUID = 1L;
@@ -73,5 +75,9 @@ public class UserInfo extends Model<UserInfo> {
 			picPath = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2376638784,1470858270&fm=27&gp=0.jpg";
 		}
 		return picPath;
+	}
+
+	public UserInfo(Integer id) {
+		this.id = id;
 	}
 }

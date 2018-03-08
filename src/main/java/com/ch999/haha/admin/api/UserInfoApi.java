@@ -45,6 +45,20 @@ public class UserInfoApi {
         return  Result.success(userInfoService.getUserCenterInfo(loginUser));
     }
 
+    @PostMapping("/updateAvatar/v1")
+    public Result<String> updateAvatar(MultipartFile file){
+        Integer id = userComponent.getLoginUser().getId();
+        if(id == null){
+            return Result.error("unLogin","请登录后再进行操作");
+        }else if(file == null){
+            return Result.error("null","请选择图片");
+        }
+        if(userComponent.updateUserAvatar(id, file)){
+            return Result.success();
+        }
+        return Result.error("error","头像更改失败");
+    }
+
     @PostMapping("/test")
     public Result test(MultipartFile file){
         if(file == null){

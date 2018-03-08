@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author hahalala
@@ -23,9 +24,9 @@ public class DogAndCatComponent {
     /**
      * 猫狗种类做懒加载
      */
-    private static List<Map<String,Object>> catList;
+    private static List<Map<String, Object>> catList;
 
-    private static List<Map<String,Object>> dogList;
+    private static List<Map<String, Object>> dogList;
 
     @Resource
     private AnimalService animalService;
@@ -33,34 +34,35 @@ public class DogAndCatComponent {
 
     /**
      * 获取猫或狗的种类和id
+     *
      * @param type
      * @return
      */
-    public List<Map<String,Object>> getAnimalsName(Integer type){
-        switch (type){
+    public List<Map<String, Object>> getAnimalsName(Integer type, Boolean isNeedDetail) {
+        switch (type) {
             case 1:
-                if(CollectionUtils.isNotEmpty(dogList)){
+                if (CollectionUtils.isNotEmpty(dogList)) {
                     return dogList;
-                }else {
-                    List<Map<String,Object>> list = new ArrayList<>();
-                    getAnimalList(1).forEach(li->{
-                        Map<String,Object> liMap = new HashMap<>();
-                        liMap.put("id",li.getId());
-                        liMap.put("name",li.getName());
+                } else {
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    getAnimalList(1, isNeedDetail).forEach(li -> {
+                        Map<String, Object> liMap = new HashMap<>();
+                        liMap.put("id", li.getId());
+                        liMap.put("name", li.getName());
                         list.add(liMap);
                     });
                     dogList = list;
                     return dogList;
                 }
             case 2:
-                if(CollectionUtils.isNotEmpty(catList)){
+                if (CollectionUtils.isNotEmpty(catList)) {
                     return catList;
-                }else {
-                    List<Map<String,Object>> list = new ArrayList<>();
-                    getAnimalList(2).forEach(li->{
-                        Map<String,Object> liMap = new HashMap<>();
-                        liMap.put("id",li.getId());
-                        liMap.put("name",li.getName());
+                } else {
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    getAnimalList(2, isNeedDetail).forEach(li -> {
+                        Map<String, Object> liMap = new HashMap<>();
+                        liMap.put("id", li.getId());
+                        liMap.put("name", li.getName());
                         list.add(liMap);
                     });
                     catList = list;
@@ -72,11 +74,27 @@ public class DogAndCatComponent {
     }
 
 
-    public List<Animal> getAnimalList(Integer type){
+    public List<Animal> getAnimalList(Integer type, Boolean isNeedDetail) {
         Wrapper<Animal> wrapper = new EntityWrapper<>();
-        wrapper.eq("type",type);
+        wrapper.eq("type", type);
         List<Animal> animals = animalService.selectList(wrapper);
+        if (isNeedDetail == null || isNeedDetail) {
+            return animals.stream().filter(li -> !"未知".equals(li.getName())).collect(Collectors.toList());
+        }
         return animals;
+    }
+
+    public Map<String, Object> getAnimalDetail(Integer id) {
+        Animal animal = animalService.selectById(id);
+        if(animal == null){
+            return new HashMap<>();
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",animal.getId());
+        map.put("name",animal.getName());
+        map.put("body",animal.getBody());
+        map.put("pic",animal.getPic());
+        return map;
     }
 
 }

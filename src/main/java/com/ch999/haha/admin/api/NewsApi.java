@@ -3,8 +3,11 @@ package com.ch999.haha.admin.api;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.service.NewsCommentService;
+import com.ch999.haha.admin.service.NewsService;
+import com.ch999.haha.admin.vo.AddNewsVo;
 import com.ch999.haha.admin.vo.NewsCommentVO;
 import com.ch999.haha.admin.vo.CommentReplyVO;
+import com.ch999.haha.common.HttpClientUtil;
 import com.ch999.haha.common.PageableVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author hahalala
@@ -28,6 +32,24 @@ public class NewsApi {
 
     @Resource
     private NewsCommentService newsCommentService;
+
+    @Resource
+    private NewsService newsService;
+
+
+
+    @PostMapping("/addNews/v1")
+    public Result addNews(AddNewsVo addNewsVo,HttpServletRequest request){
+        Integer id = userComponent.getLoginUser().getId();
+        if(id == null){
+            return Result.error("error","请登录后再操作");
+        }
+        String ip = HttpClientUtil.getIpAddr(request);
+        if(newsService.addNews(addNewsVo,id,ip)){
+            return Result.success();
+        }
+        return Result.error("error","添加失败");
+    }
 
     @PostMapping("/addComment/v1")
     public Result<String> addComment(Integer newsId, String commentId, String content) {

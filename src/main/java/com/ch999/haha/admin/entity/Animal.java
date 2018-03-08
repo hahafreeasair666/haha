@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,6 +39,7 @@ public class Animal extends Model<Animal> {
     /**
      * 简介
      */
+    @JsonIgnore
 	private String body;
     /**
      * 图片路径
@@ -46,7 +48,9 @@ public class Animal extends Model<Animal> {
     /**
      * 种类狗1，猫2
      */
+    @JsonIgnore
 	private Integer type;
+
 
 	@Override
 	protected Serializable pkVal() {

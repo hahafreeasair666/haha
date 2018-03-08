@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.Date;
@@ -31,7 +32,7 @@ public class UserInfoBO {
     private Map<String,Object> creditInfo;
 
     /**
-     * 该构造器只有
+     * 该构造器只有新用户的时候调用
      * @param id
      * @param userInfo
      */

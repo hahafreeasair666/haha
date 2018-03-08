@@ -1,6 +1,7 @@
 package com.ch999.haha.admin.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.ImgsService;
@@ -51,8 +52,6 @@ public class ImgServiceImpl implements ImgService {
 
     public static boolean checkIsImg(String name) {
         String[] split = name.split("\\.");
-        System.out.println(name);
-        System.out.println(split.length);
         if (split.length < 2) {
             return false;
         } else if (split[1].equals("jpg")) {
