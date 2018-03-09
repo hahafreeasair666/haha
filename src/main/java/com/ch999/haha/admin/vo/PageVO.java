@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class NewsCommentVO {
+public class PageVO<T> {
 
     /**
      * 总页码
@@ -31,11 +31,11 @@ public class NewsCommentVO {
     /**
      * 评论内容
      */
-    private List<NewsCommentBO> commentList;
+    private List<T> list;
 
-    public NewsCommentVO(Page<NewsCommentBO> page,Integer currentPage,List<NewsCommentBO> commentList) {
+    public PageVO(Page<NewsCommentBO> page, Integer currentPage, List<T> commentList) {
         this.totalPage = page.getTotalPages();
         this.currentPage = currentPage;
-        this.commentList = commentList;
+        this.list = commentList;
     }
 }

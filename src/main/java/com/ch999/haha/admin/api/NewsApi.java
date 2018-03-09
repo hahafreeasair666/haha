@@ -1,12 +1,11 @@
 package com.ch999.haha.admin.api;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.service.NewsService;
-import com.ch999.haha.admin.vo.AddNewsVo;
-import com.ch999.haha.admin.vo.NewsCommentVO;
-import com.ch999.haha.admin.vo.CommentReplyVO;
+import com.ch999.haha.admin.vo.*;
 import com.ch999.haha.common.HttpClientUtil;
 import com.ch999.haha.common.PageableVo;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author hahalala
@@ -38,18 +38,64 @@ public class NewsApi {
 
 
 
+    //todo 以下是新闻相关
+
+
     @PostMapping("/addNews/v1")
-    public Result addNews(AddNewsVo addNewsVo,HttpServletRequest request){
+    public Result addNews(AddNewsVO addNewsVO, HttpServletRequest request){
         Integer id = userComponent.getLoginUser().getId();
         if(id == null){
             return Result.error("error","请登录后再操作");
         }
         String ip = HttpClientUtil.getIpAddr(request);
-        if(newsService.addNews(addNewsVo,id,ip)){
+        if(newsService.addNews(addNewsVO,id,ip)){
             return Result.success();
         }
         return Result.error("error","添加失败");
     }
+
+    @GetMapping("/getNewsDetailById/v1")
+    public Result<NewsDetailVO> getNewsDetailById(Integer id){
+        if(id == null){
+            return Result.error("error","请传入新闻id");
+        }
+        NewsDetailVO newsById = newsService.getNewsById(id, userComponent.getLoginUser().getId());
+        if(newsById == null){
+            return Result.error("error","该新闻不存在或已被作者删除");
+        }
+        return Result.success(newsById);
+    }
+
+    @PostMapping("/addNewsZan/v1")
+    public Result<String> addNewsZan(Integer id){
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        } else if (id == null) {
+            return Result.error("error", "请传入要点赞的新闻id");
+        }
+        Boolean aBoolean = newsService.addNewsZan(id, userId);
+        if (aBoolean == null) {
+            return Result.error("error","点赞失败，新闻不存在或已被删除");
+        }else if(aBoolean){
+            return Result.success();
+        }
+        return Result.error("error", "您已点过赞了");
+    }
+
+    @GetMapping("/getNewsList/v1")
+    public Result<PageVO<NewsListVO>> getNewsList(Page<NewsListVO> page, NewsQueryVO query){
+        Page<NewsListVO> newsListVOPage = newsService.selectNewsList(page, query);
+        PageVO<NewsListVO> pageVO = new PageVO<>();
+        pageVO.setCurrentPage(newsListVOPage.getCurrent());
+        pageVO.setTotalPage((int)Math.ceil(newsListVOPage.getTotal()/(double)page.getSize()));
+        pageVO.setList(newsListVOPage.getRecords());
+        return Result.success(pageVO);
+    }
+
+
+    //todo  以下是评论相关
+
 
     @PostMapping("/addComment/v1")
     public Result<String> addComment(Integer newsId, String commentId, String content) {
@@ -75,20 +121,23 @@ public class NewsApi {
         } else if (StringUtils.isBlank(commentId)) {
             return Result.error("error", "请传入要点赞的评论id");
         }
-        if (newsCommentService.addZan(commentId, userId)) {
+        Boolean aBoolean = newsCommentService.addZan(commentId, userId);
+        if (aBoolean == null) {
+            return Result.error("error","点赞失败，评论不存在或已被删除");
+        }else if(aBoolean){
             return Result.success();
         }
         return Result.error("error", "您已点过赞了");
     }
 
     @GetMapping("/getNewsComment/v1")
-    public Result<NewsCommentVO> getNewsComment(Integer newsId, PageableVo pageableVo) {
+    public Result<PageVO> getNewsComment(Integer newsId, PageableVo pageableVo) {
         //之前还要校验一下此新闻是否存在
         if (pageableVo.getSort() == null) {
             pageableVo.setSort(new Sort(Sort.Direction.DESC, "createTime"));
         }
-        NewsCommentVO newsCommentList = newsCommentService.getNewsCommentList(newsId, pageableVo, userComponent.getLoginUser().getId());
-        if (CollectionUtils.isEmpty(newsCommentList.getCommentList())) {
+        PageVO newsCommentList = newsCommentService.getNewsCommentList(newsId, pageableVo, userComponent.getLoginUser().getId());
+        if (CollectionUtils.isEmpty(newsCommentList.getList())) {
             return Result.success("success", "暂无评论", null);
         }
         return Result.success(newsCommentList);

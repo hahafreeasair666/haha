@@ -1,8 +1,14 @@
 package com.ch999.haha.admin.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.entity.News;
 import com.baomidou.mybatisplus.service.IService;
-import com.ch999.haha.admin.vo.AddNewsVo;
+import com.ch999.haha.admin.vo.AddNewsVO;
+import com.ch999.haha.admin.vo.NewsDetailVO;
+import com.ch999.haha.admin.vo.NewsListVO;
+import com.ch999.haha.admin.vo.NewsQueryVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,8 +20,12 @@ import com.ch999.haha.admin.vo.AddNewsVo;
  */
 public interface NewsService extends IService<News> {
 
-    Boolean addNews(AddNewsVo addNewsVo,Integer userId,String ip);
+    Boolean addNews(AddNewsVO addNewsVO, Integer userId, String ip);
 
-    News getNewsById(Integer id);
+    NewsDetailVO getNewsById(Integer id, Integer userId);
+
+    Boolean addNewsZan(Integer id,Integer userId);
+
+    Page<NewsListVO> selectNewsList(Page<NewsListVO> page, NewsQueryVO query);
 	
 }

@@ -2,21 +2,74 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ch999.haha.admin.mapper.NewsMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.News">
-		<id column="id" property="id" />
-		<result column="title" property="title" />
-		<result column="body" property="body" />
-		<result column="picture" property="picture" />
-		<result column="createuserid" property="createuserid" />
-		<result column="createtime" property="createtime" />
-		<result column="createplace" property="createplace" />
-		<result column="edittime" property="edittime" />
-		<result column="isdel" property="isdel" />
-		<result column="zan" property="zan" />
-		<result column="animaltype" property="animaltype" />
-		<result column="dogorcattype" property="dogorcattype" />
-		<result column="isadoptionnews" property="isadoptionnews" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.News">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="body" property="body"/>
+        <result column="picture" property="picture"/>
+        <result column="createuserid" property="createuserid"/>
+        <result column="createtime" property="createtime"/>
+        <result column="createplace" property="createplace"/>
+        <result column="edittime" property="edittime"/>
+        <result column="isdel" property="isdel"/>
+        <result column="zan" property="zan"/>
+        <result column="animaltype" property="animaltype"/>
+        <result column="dogorcattype" property="dogorcattype"/>
+        <result column="isadoptionnews" property="isadoptionnews"/>
+    </resultMap>
 
+    <select id="selectNewsDetail" resultType="com.ch999.haha.admin.vo.NewsDetailVO">
+		SELECT
+	n.id,
+n.title,
+n.body,
+n.picture as pic,
+n.createtime as createTime,
+n.createplace as createPlace,
+CASE
+when
+n.animaltype = 1 then '狗'
+when
+n.animaltype = 2 then '猫' end
+as type,
+an.`name` as animalName,
+n.isadoptionnews as isAdoptionNews,
+n.zan,
+ u.username as userName
+FROM
+	news n
+LEFT JOIN userinfo u ON n.createuserid = u.id
+LEFT JOIN animal an on an.id = n.dogorcattype
+WHERE
+	n.id = #{id}
+and n.isdel = 0
+	</select>
+
+    <select id="selectNewsList" resultType="com.ch999.haha.admin.vo.NewsListVO">
+        SELECT
+        n.id,
+        n.title,
+        n.picture as imgPath,
+        n.createtime as createTime,
+        n.createplace as place,
+        u.username as createUser
+        FROM
+        news n
+        LEFT JOIN userinfo u ON n.createuserid = u.id
+        LEFT JOIN animal an on an.id = n.dogorcattype
+        WHERE
+        n.isdel = 0
+        <if test="type!=null">
+            and n.animaltype=#{type}
+        </if>
+
+        <if test="specificTypes!=null">
+            and n.dogorcattype=#{specificTypes}
+        </if>
+
+        <if test="isAdoptionNews!=null">
+            and n.isadoptionnews=#{isAdoptionNews}
+        </if>
+    </select>
 </mapper>

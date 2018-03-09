@@ -33,57 +33,69 @@ public class News extends Model<News> {
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
+
     /**
      * 文章标题
      */
 	private String title;
+
     /**
      * 文章内容（可能存html进去）
      */
 	private String body;
+
     /**
      * 图片路径，取出来解析下
      */
 	private String picture;
+
     /**
      * 作者id
      */
     @TableField("createuserid")
 	private Integer createUserId;
+
     /**
      * 发布时间
      */
     @TableField("createtime")
 	private Date createTime;
+
     /**
      * 发布地点（存名字吧不然还得查表效率低）
      */
     @TableField("createplace")
 	private String createPlace;
+
     /**
      * 最后编辑时间（发布时间以它为准）
      */
     @TableField("edittime")
 	private Date editTime;
+
     /**
      * 是否删除
      */
     @TableField("isdel")
 	private Boolean isDel;
+
     /**
      * 点赞数
      */
 	private Integer zan;
+
     /**
      * 用于区分是猫类还是狗类的，狗1，猫2
      */
     @TableField("animaltype")
 	private Integer animalType;
+
     /**
      * 具体猫狗种类的id
      */
     @TableField("dogorcattype")
 	private Integer dogOrCatType;
+
     /**
      * 是否是收养信息
      */

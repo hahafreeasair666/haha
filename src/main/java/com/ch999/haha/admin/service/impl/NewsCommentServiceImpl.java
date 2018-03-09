@@ -8,7 +8,7 @@ import com.ch999.haha.admin.repository.redis.CommentZanRepository;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.vo.CommentReplyVO;
-import com.ch999.haha.admin.vo.NewsCommentVO;
+import com.ch999.haha.admin.vo.PageVO;
 import com.ch999.haha.common.PageableVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -57,6 +57,11 @@ public class NewsCommentServiceImpl implements NewsCommentService {
 
     @Override
     public Boolean addZan(String id, Integer userId) {
+        NewsCommentBO newsCommentBO = newsCommentRepository.findOne(id);
+        newsCommentBO = newsCommentBO != null ? newsCommentBO : newsCommentRepository.findByHotReplyReplyId(id);
+        if(newsCommentBO == null){
+            return null;
+        }
         CommentZanBO one = commentZanRepository.findOne(id);
         if (one != null) {
             if (one.getZanUserList().parallelStream().anyMatch(li -> li.equals(userId))) {
@@ -71,8 +76,6 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             zanList.add(userId);
             one.setZanUserList(zanList);
         }
-        NewsCommentBO newsCommentBO = newsCommentRepository.findOne(id);
-        newsCommentBO = newsCommentBO != null ? newsCommentBO : newsCommentRepository.findByHotReplyReplyId(id);
         NewsCommentBO.updateZanCount(newsCommentBO, id, one.getZanUserList().size());
         newsCommentRepository.save(newsCommentBO);
         commentZanRepository.save(one);
@@ -80,7 +83,7 @@ public class NewsCommentServiceImpl implements NewsCommentService {
     }
 
     @Override
-    public NewsCommentVO getNewsCommentList(Integer newsId, Pageable pageable, Integer userId) {
+    public PageVO getNewsCommentList(Integer newsId, Pageable pageable, Integer userId) {
         Page<NewsCommentBO> allByNewsIdAndIsDel = newsCommentRepository.findAllByNewsIdAndIsDel(newsId, false, pageable);
         List<NewsCommentBO> commentList = allByNewsIdAndIsDel.getContent();
         commentList.forEach(li -> {
@@ -108,7 +111,7 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             //回复字段赋值
             li.getReplies().forEach(re -> handleReplies(re, userId));
         });
-        return new NewsCommentVO(allByNewsIdAndIsDel, pageable.getPageNumber(), commentList);
+        return new PageVO(allByNewsIdAndIsDel, pageable.getPageNumber(), commentList);
     }
 
     @Override
