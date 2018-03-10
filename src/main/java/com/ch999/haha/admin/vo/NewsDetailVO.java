@@ -32,6 +32,11 @@ public class NewsDetailVO extends AddNewsVO {
     private Date createTime;
 
     /**
+     * 发布地点
+     */
+    private String createPlace;
+
+    /**
      * 是猫还是狗
      */
     private String type;

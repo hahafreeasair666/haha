@@ -112,12 +112,14 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
             }
             one.getZanUserList().add(userId);
         }else {
+            one = new CommentZanBO();
             one.setCommentId(id.toString());
             List<Integer> list = new ArrayList<>();
             list.add(userId);
+            one.setZanUserList(list);
         }
         news.setZan(one.getZanUserList().size());
-        this.insert(news);
+        this.updateById(news);
         commentZanRepository.save(one);
         return true;
     }

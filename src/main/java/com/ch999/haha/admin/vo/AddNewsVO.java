@@ -26,6 +26,7 @@ public class AddNewsVO {
     /**
      * 文章配图，英文逗号拼接的数字(imgs表的主键)
      */
+    @JsonIgnore
     private String pic;
 
     /**
