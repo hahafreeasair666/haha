@@ -170,7 +170,7 @@ public class MybatisPlusConfig {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(false);// XML columList
         gc.setAuthor("");
-
+        gc.setKotlin(false);
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         // gc.setMapperName("%sDao");
         // gc.setXmlName("%sDao");
@@ -210,7 +210,7 @@ public class MybatisPlusConfig {
         // strategy.setExclude(new String[] { "productinfo", "view_product_spec"
         // }); // 排除生成的表
 
-        strategy.setInclude(new String[]{"imgs"}); //
+        strategy.setInclude(new String[]{"phone"}); //
         // 需要生成的表
 
         // 字段名生成策略

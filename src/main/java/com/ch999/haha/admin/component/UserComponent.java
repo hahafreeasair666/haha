@@ -111,7 +111,10 @@ public class UserComponent {
         userInfoService.insert(userInfo);
         Wrapper<UserInfo> wrapper = new EntityWrapper<>();
         wrapper.eq("mobile", userInfo.getMobile());
+        //注册的时候就给用户一个初始信用积分
         UserInfo userInfo1 = userInfoService.selectOne(wrapper);
+        UserInfoBO userInfoBO = new UserInfoBO(userInfo1.getId(), userInfo1);
+        userInfoBORepository.save(userInfoBO);
         return userInfo1.getId();
     }
 

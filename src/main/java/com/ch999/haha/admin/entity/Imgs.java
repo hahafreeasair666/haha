@@ -1,9 +1,12 @@
 package com.ch999.haha.admin.entity;
 
+import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.activerecord.Model;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -14,6 +17,7 @@ import java.io.Serializable;
  * @author 
  * @since 2018-03-07
  */
+@Data
 public class Imgs extends Model<Imgs> {
 
     private static final long serialVersionUID = 1L;
@@ -24,39 +28,11 @@ public class Imgs extends Model<Imgs> {
 	private String imgName;
 	@TableField("img_url")
 	private String imgUrl;
+	@TableLogic
 	private Integer isdel;
-
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getImgName() {
-		return imgName;
-	}
-
-	public void setImgName(String imgName) {
-		this.imgName = imgName;
-	}
-
-	public String getImgUrl() {
-		return imgUrl;
-	}
-
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
-	}
 
 	public Integer getIsdel() {
 		return isdel;
-	}
-
-	public void setIsdel(Integer isdel) {
-		this.isdel = isdel;
 	}
 
 	@Override
@@ -64,13 +40,4 @@ public class Imgs extends Model<Imgs> {
 		return this.id;
 	}
 
-	@Override
-	public String toString() {
-		return "Imgs{" +
-			"id=" + id +
-			", imgName=" + imgName +
-			", imgUrl=" + imgUrl +
-			", isdel=" + isdel +
-			"}";
-	}
 }

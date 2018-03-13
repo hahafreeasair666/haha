@@ -27,4 +27,9 @@ public class NewsQueryVO {
      */
     private Boolean isAdoptionNews;
 
+    /**
+     * 发布者id，只有点进个人主页的时候才传这个参数
+     */
+    private Integer createUserId;
+
 }

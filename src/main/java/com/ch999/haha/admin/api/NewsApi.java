@@ -3,6 +3,7 @@ package com.ch999.haha.admin.api;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
+import com.ch999.haha.admin.document.mongo.NewsCommentBO;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.service.NewsService;
 import com.ch999.haha.admin.vo.*;
@@ -37,37 +38,36 @@ public class NewsApi {
     private NewsService newsService;
 
 
-
     //todo 以下是新闻相关
 
 
     @PostMapping("/addNews/v1")
-    public Result addNews(AddNewsVO addNewsVO, HttpServletRequest request){
+    public Result addNews(AddNewsVO addNewsVO, HttpServletRequest request) {
         Integer id = userComponent.getLoginUser().getId();
-        if(id == null){
-            return Result.error("error","请登录后再操作");
+        if (id == null) {
+            return Result.error("error", "请登录后再操作");
         }
         String ip = HttpClientUtil.getIpAddr(request);
-        if(newsService.addNews(addNewsVO,id,ip)){
+        if (newsService.addNews(addNewsVO, id, ip)) {
             return Result.success();
         }
-        return Result.error("error","添加失败");
+        return Result.error("error", "添加失败");
     }
 
     @GetMapping("/getNewsDetailById/v1")
-    public Result<NewsDetailVO> getNewsDetailById(Integer id){
-        if(id == null){
-            return Result.error("error","请传入新闻id");
+    public Result<NewsDetailVO> getNewsDetailById(Integer id) {
+        if (id == null) {
+            return Result.error("error", "请传入新闻id");
         }
         NewsDetailVO newsById = newsService.getNewsById(id, userComponent.getLoginUser().getId());
-        if(newsById == null){
-            return Result.error("error","该新闻不存在或已被作者删除");
+        if (newsById == null) {
+            return Result.error("error", "该新闻不存在或已被作者删除");
         }
         return Result.success(newsById);
     }
 
     @PostMapping("/addNewsZan/v1")
-    public Result<String> addNewsZan(Integer id){
+    public Result<String> addNewsZan(Integer id) {
         Integer userId = userComponent.getLoginUser().getId();
         if (userId == null) {
             return Result.error("unLogin", "请登录后再进行操作");
@@ -76,23 +76,71 @@ public class NewsApi {
         }
         Boolean aBoolean = newsService.addNewsZan(id, userId);
         if (aBoolean == null) {
-            return Result.error("error","点赞失败，新闻不存在或已被删除");
-        }else if(aBoolean){
+            return Result.error("error", "点赞失败，新闻不存在或已被删除");
+        } else if (aBoolean) {
             return Result.success();
         }
         return Result.error("error", "您已点过赞了");
     }
 
     @GetMapping("/getNewsList/v1")
-    public Result<PageVO<NewsListVO>> getNewsList(Page<NewsListVO> page, NewsQueryVO query){
+    public Result<PageVO<NewsListVO>> getNewsList(Page<NewsListVO> page, NewsQueryVO query) {
         Page<NewsListVO> newsListVOPage = newsService.selectNewsList(page, query);
         PageVO<NewsListVO> pageVO = new PageVO<>();
         pageVO.setCurrentPage(newsListVOPage.getCurrent());
-        pageVO.setTotalPage((int)Math.ceil(newsListVOPage.getTotal()/(double)page.getSize()));
+        pageVO.setTotalPage((int) Math.ceil(newsListVOPage.getTotal() / (double) page.getSize()));
         pageVO.setList(newsListVOPage.getRecords());
         return Result.success(pageVO);
     }
 
+    @PostMapping("/collectionNews/v1")
+    public Result<String> collectionNews(Integer id) {
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        } else if (id == null) {
+            return Result.error("error", "请选择要收藏的新闻");
+        }
+        Boolean aBoolean = newsService.collectionNews(id, userId, true);
+        if (aBoolean == null) {
+            return Result.error("error", "关注失败，公告不存在或已被删除");
+        } else if (aBoolean) {
+            return Result.success();
+        }
+        return Result.error("error", "您已收藏该公告，无需重复收藏");
+    }
+
+    @PostMapping("/cancelCollectionNews/v1")
+    public Result<String> cancelCollectionNews(Integer id) {
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        } else if (id == null) {
+            return Result.error("error", "请选择要取关的新闻");
+        }
+        if (newsService.collectionNews(id, userId, false)) {
+            return Result.success();
+        }
+        return Result.error("error", "取关失败，您未关注本公告");
+    }
+
+    @PostMapping("/deleteNewsById/v1")
+    public Result<String> deleteNewsById(Integer id){
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        }
+        if(id == null){
+            return Result.error("unLogin", "请选择要删除的公告");
+        }
+        Boolean aBoolean = newsService.deleteNewsById(id, userId);
+        if(aBoolean == null){
+            return Result.error("unLogin", "公告不存在或已被删除");
+        }else if(aBoolean){
+            return Result.success();
+        }
+        return Result.error("error","该公告不是您发布的，您无权删除");
+    }
 
     //todo  以下是评论相关
 
@@ -123,15 +171,15 @@ public class NewsApi {
         }
         Boolean aBoolean = newsCommentService.addZan(commentId, userId);
         if (aBoolean == null) {
-            return Result.error("error","点赞失败，评论不存在或已被删除");
-        }else if(aBoolean){
+            return Result.error("error", "点赞失败，评论不存在或已被删除");
+        } else if (aBoolean) {
             return Result.success();
         }
         return Result.error("error", "您已点过赞了");
     }
 
     @GetMapping("/getNewsComment/v1")
-    public Result<PageVO> getNewsComment(Integer newsId, PageableVo pageableVo) {
+    public Result<PageVO<NewsCommentBO>> getNewsComment(Integer newsId, PageableVo pageableVo) {
         //之前还要校验一下此新闻是否存在
         if (pageableVo.getSort() == null) {
             pageableVo.setSort(new Sort(Sort.Direction.DESC, "createTime"));
@@ -145,13 +193,31 @@ public class NewsApi {
 
     @GetMapping("/getCommentReply/v1")
     public Result<CommentReplyVO> getNewsReply(String commentId, PageableVo pageableVo) {
-        if(StringUtils.isBlank(commentId)){
-            return Result.paramError("error","请传入评论id");
+        if (StringUtils.isBlank(commentId)) {
+            return Result.paramError("error", "请传入评论id");
         }
         CommentReplyVO commentReplies = newsCommentService.getCommentReplies(commentId, pageableVo, userComponent.getLoginUser().getId());
-        if(commentReplies.getNewsCommentAndReply() == null){
-            return Result.error("error","该评论不存在或已删除");
+        if (commentReplies.getNewsCommentAndReply() == null) {
+            return Result.error("error", "该评论不存在或已删除");
         }
         return Result.success(commentReplies);
+    }
+
+    @PostMapping("/deleteCommentOrReplyById/v1")
+    public Result<String> deleteCommentOrReplyById(String id){
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        }
+        if(StringUtils.isBlank(id)){
+            return Result.error("error","请选择要删除的评论");
+        }
+        Boolean aBoolean = newsCommentService.deleteCommentOrReplyById(id, userId);
+        if(aBoolean == null){
+            return Result.error("unLogin", "评论不存在或已被删除");
+        }else if(aBoolean){
+            return Result.success();
+        }
+        return Result.error("error","该评论不是您发布的，您无权删除");
     }
 }

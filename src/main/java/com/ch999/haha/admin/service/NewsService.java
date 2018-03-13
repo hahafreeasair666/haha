@@ -27,5 +27,16 @@ public interface NewsService extends IService<News> {
     Boolean addNewsZan(Integer id,Integer userId);
 
     Page<NewsListVO> selectNewsList(Page<NewsListVO> page, NewsQueryVO query);
+
+    /**
+     * 收藏，取消收藏公告
+     * @param id
+     * @param userId
+     * @param isCollection
+     * @return
+     */
+    Boolean collectionNews(Integer id,Integer userId,Boolean isCollection);
+
+    Boolean deleteNewsById(Integer id,Integer userId);
 	
 }

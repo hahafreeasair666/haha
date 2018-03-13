@@ -39,24 +39,10 @@ public class UserCenterVO {
     private Integer follows;
 
     /**
-     * 获得的赞
-     */
-    private Integer zan;
-
-    /**
      * 个人描述，个性签名等信息
      */
     private String description;
 
-    /**
-     * 我的发布
-     */
-    private Integer myRelease;
-
-    /**
-     * 我的收藏
-     */
-    private Integer myCollection;
 
     /**
      *默认简介

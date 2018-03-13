@@ -36,6 +36,7 @@ as type,
 an.`name` as animalName,
 n.isadoptionnews as isAdoptionNews,
 n.zan,
+n.createuserid as userId,
  u.username as userName
 FROM
 	news n
@@ -70,6 +71,10 @@ and n.isdel = 0
 
         <if test="isAdoptionNews!=null">
             and n.isadoptionnews=#{isAdoptionNews}
+        </if>
+
+        <if test="createUserId!=null">
+            and n.createuserid=#{createUserId}
         </if>
     </select>
 </mapper>

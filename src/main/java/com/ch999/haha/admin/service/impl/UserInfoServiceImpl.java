@@ -3,10 +3,15 @@ package com.ch999.haha.admin.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
+import com.ch999.haha.admin.entity.UserFans;
 import com.ch999.haha.admin.entity.UserInfo;
 import com.ch999.haha.admin.mapper.UserInfoMapper;
+import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
+import com.ch999.haha.admin.service.UserFansService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ch999.haha.admin.vo.MyCenterVO;
+import com.ch999.haha.admin.vo.OtherCenterVO;
 import com.ch999.haha.admin.vo.UserCenterVO;
 import com.ch999.haha.admin.vo.mappervo.UserCenterInfoCountVO;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Resource
     private UserInfoMapper userInfoMapper;
 
+    @Resource
+    private UserInfoBORepository userInfoBORepository;
+
+    @Resource
+    private UserFansService userFansService;
+
     @Override
     public Integer loginByMobileOrUserName(String type, String loginInfo, String pwd) {
         Wrapper<UserInfo> wrapper = new EntityWrapper<>();
@@ -45,8 +56,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public UserCenterVO getUserCenterInfo(UserInfoBO userInfo) {
-        UserCenterVO userCenterVO = new UserCenterVO();
+    public MyCenterVO getMyCenterInfo(UserInfoBO userInfo) {
+        MyCenterVO userCenterVO = new MyCenterVO();
         UserCenterInfoCountVO userInfoCount = getUserInfoCount(userInfo.getUserInfo().getId());
         userCenterVO.setUserName(userInfo.getUserInfo().getUsername());
         userCenterVO.setFans(userInfoCount.getFans());
@@ -58,6 +69,34 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userCenterVO.setMyCredit(userInfo.getCreditInfo().get("creditNum")!=null?(int)userInfo.getCreditInfo().get("creditNum"):0);
         userCenterVO.setAvatar(userInfo.getUserInfo().getPicPath());
         userCenterVO.setMyRelease(userInfoCount.getReleases());
+        return userCenterVO;
+    }
+
+    @Override
+    public OtherCenterVO getUserCenterInfo(Integer userId,Integer loginUserId) {
+        OtherCenterVO userCenterVO = new OtherCenterVO();
+        UserCenterInfoCountVO userInfoCount = getUserInfoCount(userId);
+        userCenterVO.setUserId(userId);
+        userCenterVO.setFollows(userInfoCount.getFollow());
+        userCenterVO.setFans(userInfoCount.getFans());
+        UserInfoBO one = userInfoBORepository.findOne(userId);
+        userCenterVO.setAvatar(one.getUserInfo().getPicPath());
+        userCenterVO.setDescription(one.getUserInfo().getAutograph());
+        userCenterVO.setMyCredit(one.getCreditInfo().get("creditNum")!=null?(int)one.getCreditInfo().get("creditNum"):0);
+        userCenterVO.setUserName(one.getUserInfo().getUsername());
+        //组装是否已关注信息
+        if(loginUserId != null){
+            Wrapper<UserFans> wrapper = new EntityWrapper<>();
+            wrapper.eq("userid1",loginUserId);
+            wrapper.eq("userid2",userId);
+            if(userFansService.selectCount(wrapper) == 0 && !userId.equals(loginUserId)){
+                userCenterVO.setIsCanFollow(true);
+            }else {
+                userCenterVO.setIsCanFollow(false);
+            }
+        }else {
+            userCenterVO.setIsCanFollow(true);
+        }
         return userCenterVO;
     }
 }

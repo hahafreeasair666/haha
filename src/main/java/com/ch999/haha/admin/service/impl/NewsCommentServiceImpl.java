@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +81,7 @@ public class NewsCommentServiceImpl implements NewsCommentService {
     }
 
     @Override
-    public PageVO getNewsCommentList(Integer newsId, Pageable pageable, Integer userId) {
+    public PageVO<NewsCommentBO> getNewsCommentList(Integer newsId, Pageable pageable, Integer userId) {
         Page<NewsCommentBO> allByNewsIdAndIsDel = newsCommentRepository.findAllByNewsIdAndIsDel(newsId, false, pageable);
         List<NewsCommentBO> commentList = allByNewsIdAndIsDel.getContent();
         commentList.forEach(li -> {
@@ -107,6 +105,12 @@ public class NewsCommentServiceImpl implements NewsCommentService {
                 }
             } else {
                 li.setIsPraised(false);
+            }
+            //设置能否删除该评论字段
+            if(li.getUserId().equals(userId)){
+                li.setIsCanDel(true);
+            }else {
+                li.setIsCanDel(false);
             }
             //回复字段赋值
             li.getReplies().forEach(re -> handleReplies(re, userId));
@@ -134,6 +138,12 @@ public class NewsCommentServiceImpl implements NewsCommentService {
                 }
             } else {
                 commentReplyVO.getNewsCommentAndReply().setIsPraised(false);
+            }
+            //设置能否删除该评论字段
+            if(commentReplyVO.getNewsCommentAndReply().getUserId().equals(userId)){
+                commentReplyVO.getNewsCommentAndReply().setIsCanDel(true);
+            }else {
+                commentReplyVO.getNewsCommentAndReply().setIsCanDel(false);
             }
             stopWatch.stop();
             if (CollectionUtils.isNotEmpty(commentReplyVO.getNewsCommentAndReply().getReplies())) {
@@ -167,6 +177,31 @@ public class NewsCommentServiceImpl implements NewsCommentService {
         return commentReplyVO;
     }
 
+    @Override
+    public Boolean deleteCommentOrReplyById(String id, Integer userId) {
+        NewsCommentBO newsCommentBO = newsCommentRepository.findOne(id);
+        newsCommentBO = newsCommentBO != null ? newsCommentBO : newsCommentRepository.findByHotReplyReplyId(id);
+        if(newsCommentBO == null){
+            return null;
+        }
+        if(newsCommentBO.getUserId().equals(userId) && id.equals(newsCommentBO.getId())){
+            newsCommentBO.setIsDel(true);
+            newsCommentRepository.save(newsCommentBO);
+            return true;
+        }else {
+            Map<String,Boolean> map = new HashMap<>();
+            map.put("flag",false);
+            newsCommentBO.getReplies().forEach(li->{
+               if(li.getReplyUserId().equals(userId)){
+                   li.setIsDel(true);
+                   map.put("flag",true);
+               }
+            });
+            newsCommentRepository.save(newsCommentBO);
+            return map.get("flag");
+        }
+    }
+
     private void handleReplies(NewsCommentBO.Reply re, Integer userId) {
         UserInfo replyUserInfo = userInfoService.selectById(re.getReplyUserId());
         UserInfo toUserInfo = userInfoService.selectById(re.getToUserId());
@@ -182,6 +217,12 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             }
         } else {
             re.setIsPraised(false);
+        }
+        //设置能否删除该评论字段
+        if(re.getReplyUserId().equals(userId)){
+            re.setIsCanDel(true);
+        }else {
+            re.setIsCanDel(false);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.ch999.haha.admin.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import java.util.Date;
@@ -77,7 +78,12 @@ public class News extends Model<News> {
      * 是否删除
      */
     @TableField("isdel")
+    @TableLogic
 	private Boolean isDel;
+
+    public Boolean getDel() {
+        return isDel;
+    }
 
     /**
      * 点赞数

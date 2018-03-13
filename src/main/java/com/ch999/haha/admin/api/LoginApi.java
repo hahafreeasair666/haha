@@ -48,8 +48,12 @@ public class LoginApi {
             return Result.error("loginError", "登录失败，用户名或密码错误");
         } else {
             String authorization = userComponent.getAuthorization(userId1 == null ? userId2 : userId1, isLogonFree == null ? false : isLogonFree);
+            UserInfo userInfo = userInfoService.selectById(userId1 == null ? userId2 : userId1);
             Map<String, Object> map = new HashMap<>(1);
             map.put("authorization", authorization);
+            map.put("userId",userInfo.getId());
+            map.put("userName",userInfo.getUsername());
+            map.put("avatar",userInfo.getPicPath());
             return Result.success("success", "登录成功", map);
         }
     }

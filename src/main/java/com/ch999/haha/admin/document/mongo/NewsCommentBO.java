@@ -85,6 +85,11 @@ public class NewsCommentBO {
     private Boolean isDel;
 
     /**
+     * 是否有权限删除该评论，不存入mongo
+     */
+    private Boolean isCanDel;
+
+    /**
      * 回复列表
      */
     private List<Reply> replies;
@@ -151,6 +156,11 @@ public class NewsCommentBO {
          */
         @JsonIgnore
         private Boolean isDel;
+
+        /**
+         * 是否有权限删除该评论，不存入mongo
+         */
+        private Boolean isCanDel;
 
         Reply(Integer replyUserId, String content, Integer toUserId) {
             this.replyId = IdWorker.get32UUID();

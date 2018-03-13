@@ -1,14 +1,13 @@
 package com.ch999.haha.admin.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -22,9 +21,7 @@ import java.util.Date;
  * @since 2018-01-25
  */
 @TableName("userinfo")
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 public class UserInfo extends Model<UserInfo> {
 
@@ -42,18 +39,22 @@ public class UserInfo extends Model<UserInfo> {
     /**
      * 密码
      */
+    @JsonIgnore
 	private String pwd;
     /**
      * 手机号
      */
+    @JsonIgnore
 	private String mobile;
 	/**
 	 * 个性签名
 	 */
+	@JsonIgnore
 	private String autograph;
 	/**
 	 * 生日
 	 */
+	@JsonIgnore
 	private Date birthday;
 	/**
 	 *用户头像
@@ -63,7 +64,19 @@ public class UserInfo extends Model<UserInfo> {
     /**
      * 微信授权的openid
      */
+    @JsonIgnore
 	private Integer openid;
+	/**.
+	 * 用户是否被删除
+	 */
+	@TableField("isdel")
+	@TableLogic
+	@JsonIgnore
+	private Boolean isDel;
+
+	public Boolean getDel() {
+		return isDel;
+	}
 
 	@Override
 	protected Serializable pkVal() {

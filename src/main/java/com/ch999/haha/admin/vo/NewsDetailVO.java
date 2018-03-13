@@ -22,6 +22,11 @@ public class NewsDetailVO extends AddNewsVO {
     private Integer id;
 
     /**
+     * 发布者id
+     */
+    private Integer userId;
+
+    /**
      * 发布者名字
      */
     private String userName;

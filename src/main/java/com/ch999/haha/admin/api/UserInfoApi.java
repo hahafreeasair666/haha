@@ -4,17 +4,21 @@ import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.entity.Imgs;
+import com.ch999.haha.admin.entity.UserInfo;
+import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
 import com.ch999.haha.admin.service.ImgService;
+import com.ch999.haha.admin.service.UserFansService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.service.impl.ImgServiceImpl;
 import com.ch999.haha.admin.vo.UserCenterVO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.ch999.haha.admin.vo.UserInfoUpdateVO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author hahalala
@@ -32,45 +36,145 @@ public class UserInfoApi {
     @Resource
     private UserInfoService userInfoService;
 
+    @Resource
+    private UserInfoBORepository userInfoBORepository;
+
+    @Resource
+    private UserFansService userFansService;
+
     /**
-     * 获取用户主页的信息
+     * 获取用户主页的信息,包括自己主页和别人主页
+     *
      * @return
      */
     @GetMapping("/getUserCenterInfo/v1")
-    public Result<UserCenterVO> getUserCenterInfo(){
+    public Result<UserCenterVO> getUserCenterInfo(Integer userId) {
         UserInfoBO loginUser = userComponent.getLoginUser();
-        if(loginUser.getId() == null){
-            return Result.unlogin("unLogin","请登陆后再查看个人主页",null);
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再进行操作", null);
         }
-        return  Result.success(userInfoService.getUserCenterInfo(loginUser));
+        if (userId != null && !loginUser.getId().equals(userId)) {
+            return Result.success(userInfoService.getUserCenterInfo(userId, loginUser.getId()));
+        } else {
+            return Result.success(userInfoService.getMyCenterInfo(loginUser));
+        }
     }
 
-    @PostMapping("/updateAvatar/v1")
-    public Result<String> updateAvatar(MultipartFile file){
+    /**
+     * 修改用户信息
+     *
+     * @param type             要修改的类型有{avatar,name,description,pwd}
+     * @param userInfoUpdateVO
+     * @return
+     */
+    @PostMapping("/updateUserInfo/{type}/v1")
+    public Result<String> updateAvatar(@PathVariable("type") String type, UserInfoUpdateVO userInfoUpdateVO) {
         Integer id = userComponent.getLoginUser().getId();
-        if(id == null){
-            return Result.error("unLogin","请登录后再进行操作");
-        }else if(file == null){
-            return Result.error("null","请选择图片");
+        if (id == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
         }
-        if(userComponent.updateUserAvatar(id, file)){
-            return Result.success();
+        UserInfo userInfo = new UserInfo(id);
+        userInfo.setPicPath(userInfoBORepository.findOne(id).getUserInfo().getPicPath());
+        switch (type) {
+            case "avatar":
+                if (userInfoUpdateVO.getFile() == null) {
+                    return Result.error("null", "请选择图片");
+                }
+                if (userComponent.updateUserAvatar(id, userInfoUpdateVO.getFile())) {
+                    return Result.success();
+                }
+                return Result.error("error", "头像更改失败");
+            case "name":
+                if (StringUtils.isBlank(userInfoUpdateVO.getName())) {
+                    return Result.error("null", "用户名不能为空");
+                }
+                userInfo.setUsername(userInfoUpdateVO.getName());
+                break;
+            case "description":
+                if (StringUtils.isBlank(userInfoUpdateVO.getDescription())) {
+                    return Result.error("null", "个性签名不能为空");
+                }
+                userInfo.setAutograph(userInfoUpdateVO.getDescription());
+                break;
+            case "pwd":
+                if (StringUtils.isBlank(userInfoUpdateVO.getOldPwd())) {
+                    return Result.error("null", "请输入原密码");
+                } else if (!userInfoService.selectById(id).getPwd().equals(userInfoUpdateVO.getOldPwd())) {
+                    return Result.error("error", "原密码输入错误，密码修改失败");
+                } else if (StringUtils.isBlank(userInfoUpdateVO.getNewPwd1()) || StringUtils.isBlank(userInfoUpdateVO.getNewPwd2()) || !userInfoUpdateVO.getNewPwd2().equals(userInfoUpdateVO.getNewPwd1())) {
+                    return Result.error("error", "新密码未输入或两次密码输入不一致，密码修改失败");
+                }
+                userInfo.setPwd(userInfoUpdateVO.getNewPwd1());
+                break;
         }
-        return Result.error("error","头像更改失败");
+        //修改数据库
+        userInfoService.updateById(userInfo);
+        UserInfo userInfo1 = userInfoService.selectById(id);
+        //修改缓存
+        UserInfoBO one = userInfoBORepository.findOne(id);
+        if (one != null) {
+            one.setUserInfo(userInfo1);
+        } else {
+            one = new UserInfoBO(id, userInfo1);
+        }
+        userInfoBORepository.save(one);
+        return Result.success();
     }
 
     @PostMapping("/test")
-    public Result test(MultipartFile file){
-        if(file == null){
-            return Result.error("error","请选择要上传的图片");
-        }else if(!ImgServiceImpl.checkIsImg(file.getOriginalFilename())){
-            return Result.error("error","图片格式不正确");
+    public Result<Imgs> test(MultipartFile file) {
+        if (file == null) {
+            return Result.error("error", "请选择要上传的图片");
+        } else if (!ImgServiceImpl.checkIsImg(file.getOriginalFilename())) {
+            return Result.error("error", "图片格式不正确");
         }
         Imgs imgs = imgService.uploadImg(file);
-        if(imgs == null){
-            return Result.error("error","图片上传失败");
+        if (imgs == null) {
+            return Result.error("error", "图片上传失败");
         }
         return Result.success(imgs);
     }
 
+    /**
+     * 查看用户的粉丝，关注的具体是谁
+     *
+     * @param userId     不传表示查看当前登录用户的
+     * @param isFansInfo 是否是查看粉丝信息
+     * @return
+     */
+    @GetMapping("/getFansOrFollowsDetail/v1")
+    public Result<List<UserInfo>> getFansOrFollowsDetail(Integer userId, Boolean isFansInfo) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再操作", null);
+        }
+        return Result.success(userFansService.getUserFansOrFollows(userId != null ? userId : loginUser.getId(), isFansInfo));
+    }
+
+    /**
+     * 关注和取关
+     * @param userId
+     * @return
+     */
+    @PostMapping("/followOrCancel/v1")
+    public Result<String> followOrCancel(Integer userId,Boolean isFollow) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再操作", null);
+        }
+        if(userId == null){
+            return Result.error("error","请选择要关注或者取关的人");
+        }
+        if(userId.equals(loginUser.getId())){
+            return Result.error("error","不能自己关注自己");
+        }
+        Boolean aBoolean = userFansService.followOrCancel(loginUser.getId(), userId, isFollow);
+        if(aBoolean){
+            return Result.success();
+        }
+        if(isFollow == null || isFollow) {
+            return Result.error("error", "你已经关注他了无需重复关注");
+        }
+        return Result.error("error", "你未关注他无法取消关注");
+    }
 }
