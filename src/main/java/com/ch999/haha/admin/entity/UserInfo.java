@@ -74,6 +74,7 @@ public class UserInfo extends Model<UserInfo> {
 	@JsonIgnore
 	private Boolean isDel;
 
+	@JsonIgnore
 	public Boolean getDel() {
 		return isDel;
 	}

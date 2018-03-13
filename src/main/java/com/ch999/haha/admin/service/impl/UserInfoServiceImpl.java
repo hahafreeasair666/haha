@@ -80,6 +80,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userCenterVO.setFollows(userInfoCount.getFollow());
         userCenterVO.setFans(userInfoCount.getFans());
         UserInfoBO one = userInfoBORepository.findOne(userId);
+        if(one == null){
+            return null;
+        }
         userCenterVO.setAvatar(one.getUserInfo().getPicPath());
         userCenterVO.setDescription(one.getUserInfo().getAutograph());
         userCenterVO.setMyCredit(one.getCreditInfo().get("creditNum")!=null?(int)one.getCreditInfo().get("creditNum"):0);

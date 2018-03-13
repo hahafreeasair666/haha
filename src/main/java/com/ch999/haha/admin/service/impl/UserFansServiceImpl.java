@@ -60,6 +60,9 @@ public class UserFansServiceImpl extends ServiceImpl<UserFansMapper, UserFans> i
 
     @Override
     public Boolean followOrCancel(Integer userId1, Integer userId2,Boolean isFollow) {
+        if(userInfoService.selectById(userId2) == null){
+            return null;
+        }
         Wrapper<UserFans> wrapper = new EntityWrapper<>();
         wrapper.eq("userid1",userId1).eq("userid2",userId2);
         List<UserFans> userFans = this.selectList(wrapper);

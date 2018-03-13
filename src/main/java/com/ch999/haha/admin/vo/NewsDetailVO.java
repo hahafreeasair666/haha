@@ -62,6 +62,11 @@ public class NewsDetailVO extends AddNewsVO {
     private Boolean isPraised;
 
     /**
+     * 是否能收藏
+     */
+    private Boolean isCanCollection;
+
+    /**
      * 文章配图
      */
     private List<String> picMap;

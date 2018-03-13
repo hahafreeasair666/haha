@@ -10,6 +10,7 @@ import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.UserFansService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.service.impl.ImgServiceImpl;
+import com.ch999.haha.admin.vo.OtherCenterVO;
 import com.ch999.haha.admin.vo.UserCenterVO;
 import com.ch999.haha.admin.vo.UserInfoUpdateVO;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,11 @@ public class UserInfoApi {
             return Result.unlogin("unLogin", "请登陆后再进行操作", null);
         }
         if (userId != null && !loginUser.getId().equals(userId)) {
-            return Result.success(userInfoService.getUserCenterInfo(userId, loginUser.getId()));
+            OtherCenterVO userCenterInfo = userInfoService.getUserCenterInfo(userId, loginUser.getId());
+            if(userCenterInfo == null){
+                return Result.error("error","用户不存在");
+            }
+            return Result.success(userCenterInfo);
         } else {
             return Result.success(userInfoService.getMyCenterInfo(loginUser));
         }
@@ -106,6 +111,8 @@ public class UserInfoApi {
                 }
                 userInfo.setPwd(userInfoUpdateVO.getNewPwd1());
                 break;
+            default:
+                return Result.error("error", "不支持该类型的修改");
         }
         //修改数据库
         userInfoService.updateById(userInfo);
@@ -169,7 +176,9 @@ public class UserInfoApi {
             return Result.error("error","不能自己关注自己");
         }
         Boolean aBoolean = userFansService.followOrCancel(loginUser.getId(), userId, isFollow);
-        if(aBoolean){
+        if(aBoolean == null){
+            return Result.error("error", "要关注或取关的用户不存在");
+        } else if(aBoolean){
             return Result.success();
         }
         if(isFollow == null || isFollow) {

@@ -192,7 +192,7 @@ public class NewsCommentServiceImpl implements NewsCommentService {
             Map<String,Boolean> map = new HashMap<>();
             map.put("flag",false);
             newsCommentBO.getReplies().forEach(li->{
-               if(li.getReplyUserId().equals(userId)){
+               if(li.getReplyUserId().equals(userId) && li.getReplyId().equals(id)){
                    li.setIsDel(true);
                    map.put("flag",true);
                }

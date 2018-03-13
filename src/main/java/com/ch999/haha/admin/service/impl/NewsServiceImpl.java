@@ -86,6 +86,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     public NewsDetailVO getNewsById(Integer id, Integer userId) {
         NewsDetailVO newsDetailVO = newsMapper.selectNewsDetail(id);
         if (newsDetailVO != null) {
+            //是否已赞
             if (userId != null && newsDetailVO.getZan() > 0) {
                 CommentZanBO one = commentZanRepository.findOne(id.toString());
                 if (one != null && one.getZanUserList().stream().anyMatch(userId::equals)) {
@@ -95,6 +96,14 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
                 }
             } else {
                 newsDetailVO.setIsPraised(false);
+            }
+            //是否能收藏
+            Wrapper<NewsCollections> wrapper = new EntityWrapper<>();
+            wrapper.eq("userid",userId).eq("newid",id);
+            if(newsCollectionsService.selectCount(wrapper) > 0){
+                newsDetailVO.setIsCanCollection(false);
+            }else {
+                newsDetailVO.setIsCanCollection(true);
             }
             if (StringUtils.isNotBlank(newsDetailVO.getPic())) {
                 String[] split = newsDetailVO.getPic().split(",");
