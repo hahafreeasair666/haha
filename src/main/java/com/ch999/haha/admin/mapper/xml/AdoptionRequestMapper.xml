@@ -4,11 +4,48 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.AdoptionRequest">
-        <id column="id" property="id" />
-        <result column="newsid" property="newsid" />
-        <result column="userid" property="userid" />
-        <result column="issuccess" property="issuccess" />
-        <result column="isdel" property="isdel" />
+        <id column="id" property="id"/>
+        <result column="newsid" property="newsid"/>
+        <result column="userid" property="userid"/>
+        <result column="issuccess" property="issuccess"/>
+        <result column="isdel" property="isdel"/>
     </resultMap>
+
+    <select id="selectAdoptionRequestList" resultType="com.ch999.haha.admin.vo.AdoptionRequestVO">
+        SELECT
+	t.id AS newsId,
+	t.title,
+	adr.userid AS userId,
+	ui.username AS userName,
+	ui.picpath as avatar,
+	ui.mobile
+FROM
+	(
+		SELECT
+			adoptionid AS id,
+			newstitle AS title
+		FROM
+			adoption ad
+		WHERE
+			ad.adoptionid IN (
+				SELECT
+					id
+				FROM
+					news n
+				WHERE
+					n.isadoptionnews = 1
+				AND n.createuserid = #{userId}
+				AND n.isdel = 0
+			)
+		AND ad.isadoption = 0
+		AND ad.isdel = 0
+	) t
+LEFT JOIN adoptionrequest adr ON adr.newsid = t.id
+LEFT JOIN userinfo ui ON adr.userid = ui.id
+WHERE
+	adr.isdel = 0
+ORDER BY
+	newsId
+    </select>
 
 </mapper>

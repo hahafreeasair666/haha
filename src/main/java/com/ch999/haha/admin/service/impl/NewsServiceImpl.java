@@ -168,6 +168,8 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         newsListVOS.forEach(li -> {
             if (StringUtils.isNotBlank(li.getImgPath())) {
                 li.setImgPath(imgsService.selectById(li.getImgPath().split(",")[0]).getImgUrl());
+            }else {
+                li.setImgPath("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1521114107222&di=44a226a92e386a7e3a11f5a158b4fcfa&imgtype=0&src=http%3A%2F%2Fguangfu.bjx.com.cn%2Fb2b%2FContent%2Fimages%2Fzwtp.gif%3Fbjx_newlogo_v%3D20161230");
             }
         });
         Page<NewsListVO> pageList = new Page<>();

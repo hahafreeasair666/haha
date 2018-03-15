@@ -1,5 +1,6 @@
 package com.ch999.haha.admin.api;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
@@ -7,13 +8,9 @@ import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.entity.Phone;
 import com.ch999.haha.admin.entity.UserInfo;
 import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
-import com.ch999.haha.admin.service.ImgService;
-import com.ch999.haha.admin.service.UserFansService;
-import com.ch999.haha.admin.service.UserInfoService;
+import com.ch999.haha.admin.service.*;
 import com.ch999.haha.admin.service.impl.ImgServiceImpl;
-import com.ch999.haha.admin.vo.OtherCenterVO;
-import com.ch999.haha.admin.vo.UserCenterVO;
-import com.ch999.haha.admin.vo.UserInfoUpdateVO;
+import com.ch999.haha.admin.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +40,12 @@ public class UserInfoApi {
 
     @Resource
     private UserFansService userFansService;
+
+    @Resource
+    private AdoptionRequestService adoptionRequestService;
+
+    @Resource
+    private NewsCollectionsService newsCollectionsService;
 
     /**
      * 获取用户主页的信息,包括自己主页和别人主页
@@ -163,12 +166,12 @@ public class UserInfoApi {
      * @return
      */
     @GetMapping("/getFansOrFollowsDetail/v1")
-    public Result<List<UserInfo>> getFansOrFollowsDetail(Integer userId, Boolean isFansInfo) {
+    public Result<PageVO<UserInfo>> getFansOrFollowsDetail(Integer userId, Boolean isFansInfo,Integer current) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.unlogin("unLogin", "请登陆后再操作", null);
         }
-        return Result.success(userFansService.getUserFansOrFollows(userId != null ? userId : loginUser.getId(), isFansInfo));
+        return Result.success(userFansService.getUserFansOrFollows(userId != null ? userId : loginUser.getId(), isFansInfo,current == null ? 1 : current));
     }
 
     /**
@@ -200,4 +203,38 @@ public class UserInfoApi {
         }
         return Result.error("error", "你未关注他无法取消关注");
     }
+
+    @GetMapping("/getMyAdoption/v1")
+    public Result<PageVO<MyAdoptionVO>> getMyAdoption(Integer current) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再查看信息", null);
+        }
+        return Result.success(adoptionRequestService.getMyAdoptionList(loginUser.getId(), current == null ? 1 : current));
+    }
+
+    @GetMapping("/getAdoptionRequest/v1")
+    public Result<PageVO<AdoptionRequestVO>> getAdoptionRequest(Page<AdoptionRequestVO> page) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再查看信息", null);
+        }
+        Page<AdoptionRequestVO> adoptionRequestList = adoptionRequestService.getAdoptionRequestList(page, loginUser.getId());
+        PageVO<AdoptionRequestVO> pageVO = new PageVO<>();
+        pageVO.setCurrentPage(page.getCurrent());
+        pageVO.setTotalPage((int) Math.ceil(page.getTotal() / (double) page.getSize()));
+        pageVO.setList(adoptionRequestList.getRecords());
+        return Result.success(pageVO);
+    }
+
+    //我的发布
+    @GetMapping("/getMyReleaseOrCollection/v1")
+    public Result<PageVO<NewsListVO>> getMyRelease(Page<NewsListVO> page,Boolean isCollection){
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再查看信息", null);
+        }
+        return Result.success(newsCollectionsService.getMyCollectionOrReleaseList(page,loginUser.getId(),isCollection == null ? true : isCollection));
+    }
+
 }

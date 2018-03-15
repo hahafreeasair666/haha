@@ -21,7 +21,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-@TableName("AdoptionRequest")
+@TableName("adoptionrequest")
 public class AdoptionRequest extends Model<AdoptionRequest> {
 
     private static final long serialVersionUID = 1L;

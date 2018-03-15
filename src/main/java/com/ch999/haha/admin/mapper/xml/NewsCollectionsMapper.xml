@@ -10,4 +10,34 @@
 		<result column="isdel" property="isdel" />
 	</resultMap>
 
+	<select id="selectCollectionList" resultType="com.ch999.haha.admin.vo.NewsListVO">
+		SELECT
+	n.id,
+	n.title,
+	n.createplace AS place,
+	u.username AS createUser,
+	n.createtime AS createTime,
+	n.picture AS imgPath
+FROM
+	news n
+LEFT JOIN userinfo u on u.id = n.createuserid
+WHERE
+	<if test="isCollection == true">
+		n.id IN (
+		SELECT
+		nc.newid
+		FROM
+		newscollections nc
+		WHERE
+		nc.userid = #{userId}
+		AND nc.isdel = 0
+		)
+	</if>
+
+    <if test="isCollection == false">
+		n.createuserid = #{userId}
+	</if>
+	AND n.isdel = 0
+	</select>
+
 </mapper>
