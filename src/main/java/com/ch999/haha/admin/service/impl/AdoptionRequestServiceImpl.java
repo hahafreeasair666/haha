@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,6 +45,9 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
 
     @Resource
     private ImgsService imgsService;
+
+    @Resource
+    private AdoptionService adoptionService;
 
     @Override
     public Boolean addAdoptionRequest(Integer id, Integer userId) {
@@ -94,6 +98,31 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
         Page<AdoptionRequestVO> pageList = new Page<>();
         pageList.setRecords(adoptionRequestVOS);
         return pageList;
+    }
+
+    @Override
+    public Boolean handleAdoptionInfo(Integer loginUserId, Integer adoptionId, Integer userId) {
+        News news = newsService.selectById(adoptionId);
+        if(news == null || !news.getCreateUserId().equals(loginUserId) || !news.getIsAdoptionNews()){
+            return null;
+        }
+        Wrapper<Adoption> wrapper = new EntityWrapper<>();
+        wrapper.eq("adoptionid",adoptionId).eq("isadoption",0);
+        List<Adoption> adoptions = adoptionService.selectList(wrapper);
+        if(CollectionUtils.isNotEmpty(adoptions)){
+            Wrapper<AdoptionRequest> wrapper1 = new EntityWrapper<>();
+            wrapper1.eq("newsid",adoptionId).eq("userid",userId);
+            List<AdoptionRequest> adoptionRequests = this.selectList(wrapper1);
+            if(CollectionUtils.isEmpty(adoptionRequests)){
+                return null;
+            }
+            adoptionRequests.get(0).setIsSuccess(true);
+            adoptions.get(0).setIsAdoption(true);
+            adoptions.get(0).setUserId(userId);
+            adoptions.get(0).setAdoptionTime(new Date());
+            return this.updateById(adoptionRequests.get(0)) && adoptionService.updateById(adoptions.get(0));
+        }
+        return null;
     }
 
     private String getOnePicPath(News news){

@@ -166,12 +166,12 @@ public class UserInfoApi {
      * @return
      */
     @GetMapping("/getFansOrFollowsDetail/v1")
-    public Result<PageVO<UserInfo>> getFansOrFollowsDetail(Integer userId, Boolean isFansInfo,Integer current) {
+    public Result<PageVO<UserInfo>> getFansOrFollowsDetail(Integer userId, Boolean isFansInfo, Integer current) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.unlogin("unLogin", "请登陆后再操作", null);
         }
-        return Result.success(userFansService.getUserFansOrFollows(userId != null ? userId : loginUser.getId(), isFansInfo,current == null ? 1 : current));
+        return Result.success(userFansService.getUserFansOrFollows(userId != null ? userId : loginUser.getId(), isFansInfo, current == null ? 1 : current));
     }
 
     /**
@@ -204,6 +204,7 @@ public class UserInfoApi {
         return Result.error("error", "你未关注他无法取消关注");
     }
 
+    //我想收养
     @GetMapping("/getMyAdoption/v1")
     public Result<PageVO<MyAdoptionVO>> getMyAdoption(Integer current) {
         UserInfoBO loginUser = userComponent.getLoginUser();
@@ -213,6 +214,7 @@ public class UserInfoApi {
         return Result.success(adoptionRequestService.getMyAdoptionList(loginUser.getId(), current == null ? 1 : current));
     }
 
+    //想领养的人
     @GetMapping("/getAdoptionRequest/v1")
     public Result<PageVO<AdoptionRequestVO>> getAdoptionRequest(Page<AdoptionRequestVO> page) {
         UserInfoBO loginUser = userComponent.getLoginUser();
@@ -227,14 +229,33 @@ public class UserInfoApi {
         return Result.success(pageVO);
     }
 
-    //我的发布
+    //我的发布或收藏
     @GetMapping("/getMyReleaseOrCollection/v1")
-    public Result<PageVO<NewsListVO>> getMyRelease(Page<NewsListVO> page,Boolean isCollection){
+    public Result<PageVO<NewsListVO>> getMyRelease(Page<NewsListVO> page, Boolean isCollection) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.unlogin("unLogin", "请登陆后再查看信息", null);
         }
-        return Result.success(newsCollectionsService.getMyCollectionOrReleaseList(page,loginUser.getId(),isCollection == null ? true : isCollection));
+        return Result.success(newsCollectionsService.getMyCollectionOrReleaseList(page, loginUser.getId(), isCollection == null ? true : isCollection));
     }
 
+    //确认收养
+    @PostMapping("/handleAdoptionInfo/v1")
+    public Result<String> handleAdoptionInfo(Integer newsId, Integer userId) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再处理信息", null);
+        } else if (newsId == null) {
+            return Result.error("error", "请选择你要处理的领养信息");
+        } else if (userId == null) {
+            return Result.error("error", "请选择你要确认领养的用户");
+        }
+        Boolean aBoolean = adoptionRequestService.handleAdoptionInfo(loginUser.getId(), newsId, userId);
+        if (aBoolean == null) {
+            return Result.error("error", "操作失败，改宠物已被领养，或该用户没有发起收养请求,或您无权操作此申请");
+        } else if (aBoolean) {
+            return Result.success();
+        }
+        return Result.error("error", "处理失败请联系开发人员检查代码");
+    }
 }

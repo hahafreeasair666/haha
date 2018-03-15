@@ -49,5 +49,6 @@ public class AddNewsVO {
     /**
      * 如果发布的是晒领养动物的信息则加上领养动物的id，领养的动物列表稍后给出
      */
+    @JsonIgnore
     private Integer adoptionId;
 }

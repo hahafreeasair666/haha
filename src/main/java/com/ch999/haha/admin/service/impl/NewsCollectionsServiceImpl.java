@@ -36,6 +36,9 @@ public class NewsCollectionsServiceImpl extends ServiceImpl<NewsCollectionsMappe
     @Resource
     private NewsCollectionsMapper newsCollectionsMapper;
 
+    @Resource
+    private UserInfoService userInfoService;
+
 
     @Override
     public PageVO<NewsListVO> getMyCollectionOrReleaseList(Page<NewsListVO> page, Integer userId,Boolean isCollection) {

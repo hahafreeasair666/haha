@@ -75,8 +75,12 @@ public class NewsDetailVO extends AddNewsVO {
     /**
      * 是否是收养信息
      */
-    @JsonIgnore
     private Boolean isAdoptionNews;
+
+    /**
+     * 所关联的父公告id
+     */
+    private Map<String,Object> parentNews;
 
     /**
      * 文章配图

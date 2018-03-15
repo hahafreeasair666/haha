@@ -26,4 +26,6 @@ public interface AdoptionRequestService extends IService<AdoptionRequest> {
 
     Page<AdoptionRequestVO> getAdoptionRequestList(Page<AdoptionRequestVO> page, Integer userId);
 
+    Boolean handleAdoptionInfo(Integer loginUserId,Integer adoptionId,Integer userId);
+
 }

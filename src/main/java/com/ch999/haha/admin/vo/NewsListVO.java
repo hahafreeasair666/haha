@@ -23,6 +23,8 @@ public class NewsListVO {
 
     private String createUser;
 
+    private String avatar;
+
     private String place;
 
 }

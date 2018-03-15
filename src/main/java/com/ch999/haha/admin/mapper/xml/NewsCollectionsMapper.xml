@@ -16,6 +16,7 @@
 	n.title,
 	n.createplace AS place,
 	u.username AS createUser,
+	u.picpath AS avatar,
 	n.createtime AS createTime,
 	n.picture AS imgPath
 FROM
