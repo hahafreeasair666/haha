@@ -48,7 +48,21 @@ OR t.releases = '' THEN
 	0
 WHEN t.releases IS NOT NULL THEN
 	t.releases
-END AS releases
+END AS releases,
+ CASE
+WHEN ad.myAdoption IS NULL
+OR ad.myAdoption = '' THEN
+	0
+WHEN ad.myAdoption IS NOT NULL THEN
+	ad.myAdoption
+END AS myAdoption,
+CASE
+WHEN adop.AdoptionRequest IS NULL
+OR adop.AdoptionRequest = '' THEN
+	0
+WHEN adop.AdoptionRequest IS NOT NULL THEN
+	adop.AdoptionRequest
+END AS AdoptionRequest
 FROM
 	(
 		SELECT
@@ -91,6 +105,35 @@ LEFT JOIN (
 		nc.userid = #{userId}
 	AND isdel = 0
 ) c ON c.userid = t.createuserid
+LEFT JOIN (
+	SELECT
+		adr.userid,
+		count(1) AS myAdoption
+	FROM
+		adoptionrequest adr
+	WHERE
+		adr.userid = #{userId}
+	AND adr.isdel = 0
+) ad ON ad.userid = t.createuserid
+LEFT JOIN (
+	SELECT
+		nuid.createuserid,
+    count(1) AdoptionRequest
+	FROM (
+			SELECT
+        ne.createuserid,
+				ne.id
+			FROM
+				news ne
+			LEFT JOIN adoption ap ON ap.adoptionid = ne.id
+			WHERE
+				ne.createuserid = #{userId}
+			AND ne.isadoptionnews = 1
+			AND ne.isdel = 0
+			AND ap.isadoption = 0
+		) nuid LEFT JOIN adoptionrequest adr on adr.newsid = nuid.id
+ WHERE adr.userid !='' and adr.isdel = 0
+) adop on adop.createuserid = t.createuserid
 	</select>
 
 </mapper>

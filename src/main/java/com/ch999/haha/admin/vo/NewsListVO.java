@@ -24,4 +24,5 @@ public class NewsListVO {
     private String createUser;
 
     private String place;
+
 }

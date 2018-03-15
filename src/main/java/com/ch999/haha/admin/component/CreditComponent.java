@@ -41,5 +41,4 @@ public class CreditComponent {
     public void testTimedTask(){
         System.out.println("哈哈自在如风");
     }*/
-
 }

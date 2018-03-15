@@ -45,4 +45,9 @@ public class AddNewsVO {
      * 是否是领养信息
      */
     private Boolean isAdoptionNews;
+
+    /**
+     * 如果发布的是晒领养动物的信息则加上领养动物的id，领养的动物列表稍后给出
+     */
+    private Integer adoptionId;
 }

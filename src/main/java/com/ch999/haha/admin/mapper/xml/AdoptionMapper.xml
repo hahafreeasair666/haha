@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch999.haha.admin.mapper.AdoptionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.Adoption">
+        <id column="id" property="id" />
+        <result column="adoptionid" property="adoptionid" />
+        <result column="newstitle" property="newstitle" />
+        <result column="isadoption" property="isadoption" />
+        <result column="userid" property="userid" />
+        <result column="isdel" property="isdel" />
+    </resultMap>
+
+</mapper>

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.mongo.NewsCommentBO;
+import com.ch999.haha.admin.service.AdoptionRequestService;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.service.NewsService;
 import com.ch999.haha.admin.vo.*;
@@ -36,6 +37,9 @@ public class NewsApi {
 
     @Resource
     private NewsService newsService;
+
+    @Resource
+    private AdoptionRequestService AdoptionRequestService;
 
 
     //todo 以下是新闻相关
@@ -125,21 +129,36 @@ public class NewsApi {
     }
 
     @PostMapping("/deleteNewsById/v1")
-    public Result<String> deleteNewsById(Integer id){
+    public Result<String> deleteNewsById(Integer id) {
         Integer userId = userComponent.getLoginUser().getId();
         if (userId == null) {
             return Result.error("unLogin", "请登录后再进行操作");
         }
-        if(id == null){
+        if (id == null) {
             return Result.error("unLogin", "请选择要删除的公告");
         }
         Boolean aBoolean = newsService.deleteNewsById(id, userId);
-        if(aBoolean == null){
+        if (aBoolean == null) {
             return Result.error("unLogin", "公告不存在或已被删除");
-        }else if(aBoolean){
+        } else if (aBoolean) {
             return Result.success();
         }
-        return Result.error("error","该公告不是您发布的，您无权删除");
+        return Result.error("error", "该公告不是您发布的，您无权删除");
+    }
+
+    @PostMapping("/iWantToAdoption/v1")
+    public Result<String> iWantToAdoption(Integer id) {
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        }
+        if (id == null) {
+            return Result.error("unLogin", "请选择要领养的宠物");
+        }
+        if (newsService.checkIsCanAdoption(id)) {
+            return AdoptionRequestService.addAdoptionRequest(id, userId) ? Result.success() : Result.error("error", "您已申请过领养无需重复申请");
+        }
+        return Result.error("error", "该宠物已被领养");
     }
 
     //todo  以下是评论相关
@@ -204,20 +223,20 @@ public class NewsApi {
     }
 
     @PostMapping("/deleteCommentOrReplyById/v1")
-    public Result<String> deleteCommentOrReplyById(String id){
+    public Result<String> deleteCommentOrReplyById(String id) {
         Integer userId = userComponent.getLoginUser().getId();
         if (userId == null) {
             return Result.error("unLogin", "请登录后再进行操作");
         }
-        if(StringUtils.isBlank(id)){
-            return Result.error("error","请选择要删除的评论");
+        if (StringUtils.isBlank(id)) {
+            return Result.error("error", "请选择要删除的评论");
         }
         Boolean aBoolean = newsCommentService.deleteCommentOrReplyById(id, userId);
-        if(aBoolean == null){
+        if (aBoolean == null) {
             return Result.error("unLogin", "评论不存在或已被删除");
-        }else if(aBoolean){
+        } else if (aBoolean) {
             return Result.success();
         }
-        return Result.error("error","该评论不是您发布的，您无权删除");
+        return Result.error("error", "该评论不是您发布的，您无权删除");
     }
 }

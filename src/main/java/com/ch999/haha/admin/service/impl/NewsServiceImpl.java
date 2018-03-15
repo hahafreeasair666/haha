@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.document.redis.CommentZanBO;
+import com.ch999.haha.admin.entity.Adoption;
 import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.entity.News;
 import com.ch999.haha.admin.entity.NewsCollections;
 import com.ch999.haha.admin.mapper.NewsMapper;
 import com.ch999.haha.admin.repository.redis.CommentZanRepository;
+import com.ch999.haha.admin.service.AdoptionService;
 import com.ch999.haha.admin.service.ImgsService;
 import com.ch999.haha.admin.service.NewsCollectionsService;
 import com.ch999.haha.admin.service.NewsService;
@@ -60,6 +62,9 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     @Resource
     private NewsCollectionsService newsCollectionsService;
 
+    @Resource
+    private AdoptionService adoptionService;
+
     @Override
     public Boolean addNews(AddNewsVO addNewsVO, Integer userId, String ip) {
         News news = new News();
@@ -69,6 +74,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         news.setCreateUserId(userId);
         news.setIsDel(false);
         news.setZan(0);
+        news.setPicture(addNewsVO.getPic());
         String format = String.format(IP_URL, ip);
         String s = HttpClientUtil.get(format);
         Map map = JSONObject.parseObject(s, Map.class);
@@ -79,7 +85,14 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         } else {
             news.setCreatePlace("未知");
         }
-        return this.insert(news);
+        //插入公告表
+        this.insert(news);
+        //如果是领养信息插入领养表,不传默认就是领养信息吧
+        if (addNewsVO.getIsAdoptionNews() == null || addNewsVO.getIsAdoptionNews()) {
+            Adoption adoption = new Adoption(news.getId(), news.getTitle());
+            adoptionService.insert(adoption);
+        }
+        return true;
     }
 
     @Override
@@ -99,36 +112,44 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
             }
             //是否能收藏
             Wrapper<NewsCollections> wrapper = new EntityWrapper<>();
-            wrapper.eq("userid",userId).eq("newid",id);
-            if(newsCollectionsService.selectCount(wrapper) > 0){
+            wrapper.eq("userid", userId).eq("newid", id);
+            if (newsCollectionsService.selectCount(wrapper) > 0) {
                 newsDetailVO.setIsCanCollection(false);
-            }else {
+            } else {
                 newsDetailVO.setIsCanCollection(true);
             }
             if (StringUtils.isNotBlank(newsDetailVO.getPic())) {
                 String[] split = newsDetailVO.getPic().split(",");
                 List<String> imgMap = new ArrayList<>();
                 List<Imgs> imgs = imgsService.selectBatchIds(Arrays.asList(split));
-                imgs.forEach(li -> imgMap.add( li.getImgUrl()));
+                imgs.forEach(li -> imgMap.add(li.getImgUrl()));
                 newsDetailVO.setPicMap(imgMap);
+            }
+            //是否能收养
+            Wrapper<Adoption> wrapper1 = new EntityWrapper<>();
+            wrapper1.eq("adoptionid", newsDetailVO.getId()).eq("isadoption", 0);
+            if (CollectionUtils.isNotEmpty(adoptionService.selectList(wrapper1))) {
+                newsDetailVO.setIsCanAdoption(true);
+            } else {
+                newsDetailVO.setIsCanAdoption(false);
             }
         }
         return newsDetailVO;
     }
 
     @Override
-    public Boolean addNewsZan(Integer id, Integer userId) {
+    public Boolean  addNewsZan(Integer id, Integer userId) {
         News news = this.selectById(id);
-        if(news == null){
+        if (news == null) {
             return null;
         }
         CommentZanBO one = commentZanRepository.findOne(id.toString());
-        if(one != null){
-            if(one.getZanUserList().stream().anyMatch(li->li.equals(userId))){
+        if (one != null) {
+            if (one.getZanUserList().stream().anyMatch(li -> li.equals(userId))) {
                 return false;
             }
             one.getZanUserList().add(userId);
-        }else {
+        } else {
             one = new CommentZanBO();
             one.setCommentId(id.toString());
             List<Integer> list = new ArrayList<>();
@@ -144,8 +165,8 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     @Override
     public Page<NewsListVO> selectNewsList(Page<NewsListVO> page, NewsQueryVO query) {
         List<NewsListVO> newsListVOS = newsMapper.selectNewsList(page, query);
-        newsListVOS.forEach(li->{
-            if(StringUtils.isNotBlank(li.getImgPath())){
+        newsListVOS.forEach(li -> {
+            if (StringUtils.isNotBlank(li.getImgPath())) {
                 li.setImgPath(imgsService.selectById(li.getImgPath().split(",")[0]).getImgUrl());
             }
         });
@@ -155,45 +176,57 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     }
 
     @Override
-    public Boolean collectionNews(Integer id, Integer userId,Boolean isCollection) {
+    public Boolean collectionNews(Integer id, Integer userId, Boolean isCollection) {
         Wrapper<NewsCollections> wrapper = new EntityWrapper<>();
-        wrapper.eq("userid",userId).eq("newid",id).eq("isdel",0);
+        wrapper.eq("userid", userId).eq("newid", id).eq("isdel", 0);
         List<NewsCollections> newsCollection = newsCollectionsService.selectList(wrapper);
-        if(isCollection){
+        if (isCollection) {
             //先检验公告是否存在
-            if(this.selectById(id) == null){
+            if (this.selectById(id) == null) {
                 return null;
             }
-           if(CollectionUtils.isNotEmpty(newsCollection)){
-               return false;
-           }
-           NewsCollections newsCollections = new NewsCollections(userId,id);
-           return newsCollectionsService.insert(newsCollections);
-       }else {
-           if(CollectionUtils.isEmpty(newsCollection)){
-               return false;
-           }else {
-               return newsCollectionsService.deleteById(newsCollection.get(0).getId());
-           }
-       }
+            if (CollectionUtils.isNotEmpty(newsCollection)) {
+                return false;
+            }
+            NewsCollections newsCollections = new NewsCollections(userId, id);
+            return newsCollectionsService.insert(newsCollections);
+        } else {
+            if (CollectionUtils.isEmpty(newsCollection)) {
+                return false;
+            } else {
+                return newsCollectionsService.deleteById(newsCollection.get(0).getId());
+            }
+        }
     }
 
     @Override
     public Boolean deleteNewsById(Integer id, Integer userId) {
         News news = this.selectById(id);
-        if(news == null){
+        if (news == null) {
             return null;
         }
-        if(!news.getCreateUserId().equals(userId)){
+        if (!news.getCreateUserId().equals(userId)) {
             return false;
         }
-        boolean a =  this.deleteById(id);
+        boolean a = this.deleteById(id);
         //删除公告要删除相应的关注记录
-        if(a){
+        if (a) {
             Wrapper<NewsCollections> wrapper = new EntityWrapper<>();
-            wrapper.eq("newid",id);
+            wrapper.eq("newid", id);
             newsCollectionsService.delete(wrapper);
         }
         return a;
+    }
+
+    @Override
+    public Boolean checkIsCanAdoption(Integer id) {
+        News news = this.selectById(id);
+        Wrapper<Adoption> wrapper = new EntityWrapper<>();
+        wrapper.eq("adoptionid", id);
+        List<Adoption> adoptions = adoptionService.selectList(wrapper);
+        if (CollectionUtils.isEmpty(adoptions) || news == null ) {
+            return false;
+        }
+        return news.getIsAdoptionNews() && !adoptions.get(0).getAdoption();
     }
 }

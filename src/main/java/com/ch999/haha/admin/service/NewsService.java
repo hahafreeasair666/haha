@@ -38,5 +38,7 @@ public interface NewsService extends IService<News> {
     Boolean collectionNews(Integer id,Integer userId,Boolean isCollection);
 
     Boolean deleteNewsById(Integer id,Integer userId);
+
+    Boolean checkIsCanAdoption(Integer id);
 	
 }

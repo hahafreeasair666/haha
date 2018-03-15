@@ -2,6 +2,7 @@ package com.ch999.haha.admin.controller;
 
 
 import com.ch999.common.util.vo.Result;
+import com.ch999.haha.admin.entity.Phone;
 import com.ch999.haha.admin.service.PhoneService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -27,8 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/admin/phone")
 public class PhoneController {
 
-    private static final String CK = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(16[6])|(18[0,5-9])|(19[9]))\\d{8}$";
-
     @Resource
     private PhoneService phoneService;
 
@@ -38,7 +37,7 @@ public class PhoneController {
         httpResponse.addHeader("Access-Control-Allow-Origin","*");
         if(StringUtils.isBlank(mobile)){
             return Result.error("error","请输入要验证的电话号码");
-        }else if(!mobile.matches(CK)){
+        }else if(!mobile.matches(Phone.CK)){
             return Result.error("error","请输入正确的的电话号码");
         }
         if(phoneService.checkPhoneNum(mobile)){

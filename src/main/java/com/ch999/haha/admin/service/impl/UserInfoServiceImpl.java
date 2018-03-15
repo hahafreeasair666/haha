@@ -63,6 +63,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userCenterVO.setFans(userInfoCount.getFans());
         userCenterVO.setFollows(userInfoCount.getFollow());
         userCenterVO.setMyCollection(userInfoCount.getCollections());
+        userCenterVO.setMyAdoption(userInfoCount.getMyAdoption());
+        userCenterVO.setAdoptionRequest(userInfoCount.getAdoptionRequest());
         userCenterVO.setUserId(userInfoCount.getUserId());
         userCenterVO.setZan(userInfoCount.getZan());
         userCenterVO.setDescription(userInfo.getUserInfo().getAutograph());

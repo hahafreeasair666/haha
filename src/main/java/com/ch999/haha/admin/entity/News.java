@@ -108,6 +108,16 @@ public class News extends Model<News> {
     @TableField("isadoptionnews")
 	private Boolean isAdoptionNews;
 
+    public Boolean getAdoptionNews() {
+        return isAdoptionNews;
+    }
+
+    /**
+     * 领养动物的id
+     */
+    @TableField("toadoptionid")
+    private Integer toAdoptionId;
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;

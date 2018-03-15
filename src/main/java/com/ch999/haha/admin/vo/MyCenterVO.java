@@ -26,4 +26,14 @@ public class MyCenterVO extends UserCenterVO {
      * 我的收藏
      */
     private Integer myCollection;
+
+    /**
+     * 我的收养
+     */
+    private Integer myAdoption;
+
+    /**
+     * 收养请求
+     */
+    private Integer AdoptionRequest;
 }

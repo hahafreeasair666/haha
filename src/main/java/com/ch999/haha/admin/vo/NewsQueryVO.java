@@ -23,7 +23,7 @@ public class NewsQueryVO {
     private Integer specificTypes;
 
     /**
-     * 是否是领养信息
+     * 是否是领养信息（选了的话筛选可领养的公告）
      */
     private Boolean isAdoptionNews;
 

@@ -40,4 +40,14 @@ public class UserCenterInfoCountVO {
      * 收藏数量
      */
     private Integer collections;
+
+    /**
+     * 我的领养，可以查看我申请领养的宠物的数量
+     */
+    private Integer myAdoption;
+
+    /**
+     * 别人的领养请求
+     */
+    private Integer AdoptionRequest;
 }

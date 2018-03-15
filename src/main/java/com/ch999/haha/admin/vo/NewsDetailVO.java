@@ -1,6 +1,7 @@
 package com.ch999.haha.admin.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -65,6 +66,17 @@ public class NewsDetailVO extends AddNewsVO {
      * 是否能收藏
      */
     private Boolean isCanCollection;
+
+    /**
+     * 是否能收养，不能收养的包括不是收养信息和已被收养的
+     */
+    private Boolean isCanAdoption;
+
+    /**
+     * 是否是收养信息
+     */
+    @JsonIgnore
+    private Boolean isAdoptionNews;
 
     /**
      * 文章配图

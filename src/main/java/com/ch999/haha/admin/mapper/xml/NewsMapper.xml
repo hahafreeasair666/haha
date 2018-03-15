@@ -27,6 +27,7 @@ n.body,
 n.picture as pic,
 n.createtime as createTime,
 n.createplace as createPlace,
+n.isadoptionnews as isAdoptionNews,
 CASE
 when
 n.animaltype = 1 then '狗'
@@ -59,6 +60,9 @@ and n.isdel = 0
         news n
         LEFT JOIN userinfo u ON n.createuserid = u.id
         LEFT JOIN animal an on an.id = n.dogorcattype
+        <if test="isAdoptionNews == true">
+            LEFT JOIN adoption ad ON ad.adoptionid = n.id
+        </if>
         WHERE
         n.isdel = 0
         <if test="type!=null">
@@ -73,8 +77,14 @@ and n.isdel = 0
             and n.isadoptionnews=#{isAdoptionNews}
         </if>
 
+        <if test="isAdoptionNews == true">
+            AND ad.isadoption = 0
+        </if>
+
         <if test="createUserId!=null">
             and n.createuserid=#{createUserId}
         </if>
+
+        ORDER BY n.createtime DESC
     </select>
 </mapper>

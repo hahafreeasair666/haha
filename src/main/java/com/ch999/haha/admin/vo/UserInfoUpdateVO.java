@@ -38,5 +38,10 @@ public class UserInfoUpdateVO {
 
     private String newPwd2;
 
+    /**
+     * 要修改为的的手机号码
+     */
+    private String mobile;
+
 
 }
