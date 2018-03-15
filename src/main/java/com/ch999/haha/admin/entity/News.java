@@ -115,8 +115,8 @@ public class News extends Model<News> {
     /**
      * 领养动物的id
      */
-    @TableField("toadoptionid")
-    private Integer toAdoptionId;
+    @TableField("parentid")
+    private Integer parentId;
 
 	@Override
 	protected Serializable pkVal() {

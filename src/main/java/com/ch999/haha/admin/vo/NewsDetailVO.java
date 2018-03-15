@@ -33,6 +33,11 @@ public class NewsDetailVO extends AddNewsVO {
     private String userName;
 
     /**
+     * 发布者头像
+     */
+    private String avatar;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -76,6 +81,12 @@ public class NewsDetailVO extends AddNewsVO {
      * 是否是收养信息
      */
     private Boolean isAdoptionNews;
+
+    /**
+     * 父公告id
+     */
+    @JsonIgnore
+    private Integer parentId;
 
     /**
      * 所关联的父公告id

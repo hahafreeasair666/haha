@@ -133,6 +133,14 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
             } else {
                 newsDetailVO.setIsCanAdoption(false);
             }
+            //组装父公告id
+            if(newsDetailVO.getParentId() != null){
+                News news = this.selectById(newsDetailVO.getParentId());
+                Map<String,Object> map = new HashMap<>();
+                map.put("id",news.getId());
+                map.put("title",news.getTitle());
+                newsDetailVO.setParentNews(map);
+            }
         }
         return newsDetailVO;
     }

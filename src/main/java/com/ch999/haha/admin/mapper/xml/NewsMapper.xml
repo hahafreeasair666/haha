@@ -38,7 +38,9 @@ an.`name` as animalName,
 n.isadoptionnews as isAdoptionNews,
 n.zan,
 n.createuserid as userId,
- u.username as userName
+ u.username as userName,
+ u.picpath AS avatar,
+ n.parentid AS parentId
 FROM
 	news n
 LEFT JOIN userinfo u ON n.createuserid = u.id
