@@ -5,6 +5,7 @@ import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.mongo.NewsCommentBO;
 import com.ch999.haha.admin.service.AdoptionRequestService;
+import com.ch999.haha.admin.service.AdoptionService;
 import com.ch999.haha.admin.service.NewsCommentService;
 import com.ch999.haha.admin.service.NewsService;
 import com.ch999.haha.admin.vo.*;
@@ -40,6 +41,9 @@ public class NewsApi {
 
     @Resource
     private AdoptionRequestService AdoptionRequestService;
+
+    @Resource
+    private AdoptionService adoptionService;
 
 
     //todo 以下是新闻相关
@@ -161,6 +165,15 @@ public class NewsApi {
         return Result.error("error", "该宠物已被领养");
     }
 
+    //领养后，以领养时间计算每周一次，连续3周，每月不低于4次，持续一月算是任务完成
+    @GetMapping("/getNeedSendAdoptionFeedBack/v1")
+    public Result<List<NeedSendAdoptionFeedBackVO>> getNeedSendAdoptionFeedBack(){
+        Integer userId = userComponent.getLoginUser().getId();
+        if (userId == null) {
+            return Result.error("unLogin", "请登录后再进行操作");
+        }
+        return Result.success(adoptionService.getNeedSendAdoptionFeedBack(userId));
+    }
     //todo  以下是评论相关
 
 

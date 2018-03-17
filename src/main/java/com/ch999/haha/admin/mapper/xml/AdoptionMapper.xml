@@ -12,4 +12,43 @@
         <result column="isdel" property="isdel" />
     </resultMap>
 
+    <select id="selectHadSendNews" resultType="com.ch999.haha.admin.vo.mappervo.AdoptionSuccessNewsVO">
+        SELECT
+	a.adoptionid AS pid,
+	a.newstitle AS title,
+	n.id AS newId,
+	n.title AS newTitle,
+  n.createtime as createTime,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 7 DAY
+	) AS time1,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 14 DAY
+	) AS time2,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 21 DAY
+	) AS time3,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 31 DAY
+	) AS time4
+FROM
+	(
+		SELECT
+			ad.adoptionid,
+			ad.newstitle,
+			ad.adoptiontime
+		FROM
+			adoption ad
+		WHERE
+			ad.userid = #{userId}
+	) a
+LEFT JOIN news n ON n.parentid = a.adoptionid
+where n.id !='' AND n.isdel = 0 ORDER BY createtime
+
+    </select>
+
 </mapper>
