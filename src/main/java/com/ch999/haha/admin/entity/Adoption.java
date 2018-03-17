@@ -64,6 +64,15 @@ public class Adoption extends Model<Adoption> {
     @TableField("adoptiontime")
     private Date adoptionTime;
 
+    @TableField("firsthandle")
+    private Boolean firstHandle;
+
+    @TableField("secondhandle")
+    private Boolean secondHandle;
+
+    @TableField("thirdhandle")
+    private Boolean thirdHandle;
+
     public Boolean getDel() {
         return isDel;
     }

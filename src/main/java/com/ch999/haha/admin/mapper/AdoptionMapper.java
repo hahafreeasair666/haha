@@ -18,4 +18,6 @@ import java.util.List;
 public interface AdoptionMapper extends BaseMapper<Adoption> {
 
     List<AdoptionSuccessNewsVO> selectHadSendNews(@Param("userId") Integer userId);
+
+    AdoptionSuccessNewsVO checkUserIsSendNews(@Param("id") Integer id);
 }

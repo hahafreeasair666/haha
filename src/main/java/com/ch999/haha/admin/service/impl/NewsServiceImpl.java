@@ -6,16 +6,10 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.document.redis.CommentZanBO;
-import com.ch999.haha.admin.entity.Adoption;
-import com.ch999.haha.admin.entity.Imgs;
-import com.ch999.haha.admin.entity.News;
-import com.ch999.haha.admin.entity.NewsCollections;
+import com.ch999.haha.admin.entity.*;
 import com.ch999.haha.admin.mapper.NewsMapper;
 import com.ch999.haha.admin.repository.redis.CommentZanRepository;
-import com.ch999.haha.admin.service.AdoptionService;
-import com.ch999.haha.admin.service.ImgsService;
-import com.ch999.haha.admin.service.NewsCollectionsService;
-import com.ch999.haha.admin.service.NewsService;
+import com.ch999.haha.admin.service.*;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ch999.haha.admin.vo.AddNewsVO;
 import com.ch999.haha.admin.vo.NewsDetailVO;
@@ -65,6 +59,9 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     @Resource
     private AdoptionService adoptionService;
 
+    @Resource
+    private AdoptionFeedBackService adoptionFeedBackService;
+
     @Override
     public Boolean addNews(AddNewsVO addNewsVO, Integer userId, String ip) {
         News news = new News();
@@ -91,6 +88,11 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         if (addNewsVO.getIsAdoptionNews() == null || addNewsVO.getIsAdoptionNews()) {
             Adoption adoption = new Adoption(news.getId(), news.getTitle());
             adoptionService.insert(adoption);
+        }
+        //如果是收养反馈表，插入feedback表
+        if(addNewsVO.getAdoptionId() != null){
+            AdoptionFeedBack adoptionFeedBack = new AdoptionFeedBack(addNewsVO.getAdoptionId(),news.getId());
+            adoptionFeedBackService.insert(adoptionFeedBack);
         }
         return true;
     }

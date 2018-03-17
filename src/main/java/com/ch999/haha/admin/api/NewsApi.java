@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.document.mongo.NewsCommentBO;
+import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.service.AdoptionRequestService;
 import com.ch999.haha.admin.service.AdoptionService;
 import com.ch999.haha.admin.service.NewsCommentService;
@@ -51,12 +52,15 @@ public class NewsApi {
 
     @PostMapping("/addNews/v1")
     public Result addNews(AddNewsVO addNewsVO, HttpServletRequest request) {
-        Integer id = userComponent.getLoginUser().getId();
-        if (id == null) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
             return Result.error("error", "请登录后再操作");
         }
+        if((int)loginUser.getCreditInfo().get("creditNum") < 70){
+            return Result.error("error", "对不起信誉积分不足不能发布公告");
+        }
         String ip = HttpClientUtil.getIpAddr(request);
-        if (newsService.addNews(addNewsVO, id, ip)) {
+        if (newsService.addNews(addNewsVO, loginUser.getId(), ip)) {
             return Result.success();
         }
         return Result.error("error", "添加失败");
@@ -152,15 +156,18 @@ public class NewsApi {
 
     @PostMapping("/iWantToAdoption/v1")
     public Result<String> iWantToAdoption(Integer id) {
-        Integer userId = userComponent.getLoginUser().getId();
-        if (userId == null) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
             return Result.error("unLogin", "请登录后再进行操作");
+        }
+        if((int)loginUser.getCreditInfo().get("creditNum") < 100){
+            return Result.error("error", "对不起信誉积分不足不能申请领养");
         }
         if (id == null) {
             return Result.error("unLogin", "请选择要领养的宠物");
         }
         if (newsService.checkIsCanAdoption(id)) {
-            return AdoptionRequestService.addAdoptionRequest(id, userId) ? Result.success() : Result.error("error", "您已申请过领养无需重复申请");
+            return AdoptionRequestService.addAdoptionRequest(id, loginUser.getId()) ? Result.success() : Result.error("error", "您已申请过领养无需重复申请");
         }
         return Result.error("error", "该宠物已被领养");
     }
@@ -179,15 +186,17 @@ public class NewsApi {
 
     @PostMapping("/addComment/v1")
     public Result<String> addComment(Integer newsId, String commentId, String content) {
-        Integer userId = userComponent.getLoginUser().getId();
-        if (userId == null) {
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
             return Result.error("unLogin", "请登录后再进行操作");
+        } else if((int)loginUser.getCreditInfo().get("creditNum") < 70){
+            return Result.error("error", "对不起信誉积分不足不能发起评论");
         } else if (newsId == null && StringUtils.isBlank(commentId)) {
             return Result.error("error", "请传入要评论的文章或回复的评论");
         } else if (StringUtils.isBlank(content)) {
             return Result.error("content is null", "请输入评论内容");
         }
-        if (newsCommentService.addComment(newsId, commentId, content, userId)) {
+        if (newsCommentService.addComment(newsId, commentId, content, loginUser.getId())) {
             return Result.success();
         }
         return Result.error("error", "评论失败");

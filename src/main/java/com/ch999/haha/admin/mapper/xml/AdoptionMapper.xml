@@ -51,4 +51,37 @@ where n.id !='' AND n.isdel = 0 ORDER BY createtime
 
     </select>
 
+	<select id="checkUserIsSendNews" resultType="com.ch999.haha.admin.vo.mappervo.AdoptionSuccessNewsVO">
+		SELECT
+	a.adoptionid AS pid,
+	a.newstitle AS title,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 7 DAY
+	) AS time1,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 14 DAY
+	) AS time2,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 21 DAY
+	) AS time3,
+	DATE_ADD(
+		a.adoptiontime,
+		INTERVAL 31 DAY
+	) AS time4
+FROM
+	(
+		SELECT
+			ad.adoptionid,
+			ad.newstitle,
+			ad.adoptiontime
+		FROM
+			adoption ad
+		WHERE
+			ad.id = #{id}
+	) a
+	</select>
+
 </mapper>

@@ -210,7 +210,7 @@ public class MybatisPlusConfig {
         // strategy.setExclude(new String[] { "productinfo", "view_product_spec"
         // }); // 排除生成的表
 
-        strategy.setInclude(new String[]{"AdoptionRequest"}); //
+        strategy.setInclude(new String[]{"adoptionfeedback"}); //
         // 需要生成的表
 
         // 字段名生成策略
