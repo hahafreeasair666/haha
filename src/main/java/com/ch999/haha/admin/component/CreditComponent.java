@@ -101,10 +101,10 @@ public class CreditComponent {
                     newsHandle(li,adoptionSuccessNewsVO,3);
                 }
             });
+            log.info("定时任务处理完毕 " + new Date());
         }catch (Exception e){
             log.error("拉闸，定时任务异常..............");
         }
-        log.info("定时任务处理完毕" + new Date());
     }
 
 

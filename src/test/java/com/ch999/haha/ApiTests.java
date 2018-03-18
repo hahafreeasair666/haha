@@ -2,6 +2,7 @@ package com.ch999.haha;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.ch999.haha.admin.component.CreditComponent;
 import com.ch999.haha.admin.document.mongo.MongoTestBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.entity.News;
@@ -41,6 +42,9 @@ public class ApiTests {
     @Resource
     private NewsService newsService;
 
+    @Resource
+    private CreditComponent creditComponent;
+
     @Test
     public void test() {
         /*UserCenterInfoCountVO userInfoCount = userInfoService.getUserInfoCount(1);
@@ -60,6 +64,11 @@ public class ApiTests {
         newsWrapper.eq("parentid",15).lt("createtime",new Date());
         List<News> news = newsService.selectList(newsWrapper);
         System.out.println();
+    }
+
+    @Test
+    public void test2(){
+        creditComponent.timedTaskOfZan();
     }
 
 }

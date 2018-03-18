@@ -48,7 +48,7 @@ public class AdoptionFeedBack extends Model<AdoptionFeedBack> {
     @TableLogic
     private Boolean isDel;
 
-    public Boolean getIsdel() {
+    public Boolean getDel() {
         return isDel;
     }
 
