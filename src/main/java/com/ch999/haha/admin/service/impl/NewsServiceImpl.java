@@ -63,7 +63,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     private AdoptionFeedBackService adoptionFeedBackService;
 
     @Override
-    public Boolean addNews(AddNewsVO addNewsVO, Integer userId, String ip) {
+    public Integer addNews(AddNewsVO addNewsVO, Integer userId, String ip) {
         News news = new News();
         BeanUtils.copyProperties(addNewsVO, news);
         news.setCreateTime(new Date());
@@ -94,7 +94,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
             AdoptionFeedBack adoptionFeedBack = new AdoptionFeedBack(addNewsVO.getAdoptionId(),news.getId());
             adoptionFeedBackService.insert(adoptionFeedBack);
         }
-        return true;
+        return news.getId();
     }
 
     @Override

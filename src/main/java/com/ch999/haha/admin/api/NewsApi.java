@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hahalala
@@ -51,7 +53,7 @@ public class NewsApi {
 
 
     @PostMapping("/addNews/v1")
-    public Result addNews(AddNewsVO addNewsVO, HttpServletRequest request) {
+    public Result<Map<String,Object>> addNews(AddNewsVO addNewsVO, HttpServletRequest request) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.error("error", "请登录后再操作");
@@ -60,8 +62,11 @@ public class NewsApi {
             return Result.error("error", "对不起信誉积分不足不能发布公告");
         }
         String ip = HttpClientUtil.getIpAddr(request);
-        if (newsService.addNews(addNewsVO, loginUser.getId(), ip)) {
-            return Result.success();
+        Integer integer = newsService.addNews(addNewsVO, loginUser.getId(), ip);
+        if ( integer != null) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("newsId",integer);
+            return Result.success(map);
         }
         return Result.error("error", "添加失败");
     }

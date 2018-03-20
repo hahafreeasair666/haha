@@ -51,23 +51,23 @@ public class ApiTests {
         System.out.println(userInfoCount);*/
        /* userInfoBORepository.deleteAll();
         userBORepository.deleteAll();*/
-       PageableVo pageableVo = new PageableVo();
-       //pageableVo.setSize(1);
-       //pageableVo.setPage(3);
-        pageableVo.setSort(new Sort(Sort.Direction.DESC,"createTime"));
-       newsCommentService.getNewsCommentList(5,pageableVo,null);
+        PageableVo pageableVo = new PageableVo();
+        //pageableVo.setSize(1);
+        //pageableVo.setPage(3);
+        pageableVo.setSort(new Sort(Sort.Direction.DESC, "createTime"));
+        newsCommentService.getNewsCommentList(5, pageableVo, null);
     }
 
     @Test
-    public void  test1(){
+    public void test1() {
         Wrapper<News> newsWrapper = new EntityWrapper<>();
-        newsWrapper.eq("parentid",15).lt("createtime",new Date());
+        newsWrapper.eq("parentid", 15).lt("createtime", new Date());
         List<News> news = newsService.selectList(newsWrapper);
         System.out.println();
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         creditComponent.timedTaskOfZan();
     }
 

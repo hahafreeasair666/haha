@@ -18,11 +18,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户信用分管理控制类
+ *
  * @author hahalala
  */
 @Component
@@ -47,20 +51,21 @@ public class CreditComponent {
 
     /**
      * 对用户信用积分进行增减
+     *
      * @param userId
      * @param number
      * @param isIncrease
      */
-    private void updateUserCredit(Integer userId,Integer number,Boolean isIncrease){
+    private void updateUserCredit(Integer userId, Integer number, Boolean isIncrease) {
         UserInfoBO one = userInfoBORepository.findOne(userId);
         Integer creditNum;
-        if(isIncrease){
-             creditNum = (int)one.getCreditInfo().get("creditNum") + number;
-        }else {
-             creditNum = (int)one.getCreditInfo().get("creditNum") - number;
+        if (isIncrease) {
+            creditNum = (int) one.getCreditInfo().get("creditNum") + number;
+        } else {
+            creditNum = (int) one.getCreditInfo().get("creditNum") - number;
         }
-        one.getCreditInfo().put("creditNum",creditNum);
-        one.getCreditInfo().put("updateTime",new Date());
+        one.getCreditInfo().put("creditNum", creditNum);
+        one.getCreditInfo().put("updateTime", new Date());
         userInfoBORepository.save(one);
     }
 
@@ -73,101 +78,145 @@ public class CreditComponent {
      * 对反馈公告的赞进行每日赞数量检测进行发布者信用积分的修改
      */
     @Scheduled(cron = "0 0 0 * * ?")
-    public void timedTaskOfZan(){
-        try{
+    public void timedTaskOfZan() {
+        try {
             //对收养反馈公告的赞数量进行发布者信用积分改变
             Wrapper<AdoptionFeedBack> wrapper = new EntityWrapper<>();
-            adoptionFeedBackService.selectList(wrapper).forEach(li->{
+            adoptionFeedBackService.selectList(wrapper).forEach(li -> {
                 News news = newsService.selectById(li.getNewsId());
-                if(news.getZan() > li.getLastTimeZan()){
-                    updateUserCredit(news.getCreateUserId(),getNumber(news.getZan() - li.getLastTimeZan()),true);
+                if (news.getZan() > li.getLastTimeZan()) {
+                    updateUserCredit(news.getCreateUserId(), getNumber(news.getZan() - li.getLastTimeZan()), true);
                     li.setLastTimeZan(news.getZan());
                     adoptionFeedBackService.updateById(li);
                 }
             });
             //对成功收养的反馈公告进行检查对信用积分改变
             Wrapper<Adoption> wrapper1 = new EntityWrapper<>();
-            wrapper1.eq("isadoption",1);
-            adoptionService.selectList(wrapper1).forEach(li->{
+            wrapper1.eq("isadoption", 1);
+            adoptionService.selectList(wrapper1).forEach(li -> {
                 AdoptionSuccessNewsVO adoptionSuccessNewsVO = adoptionMapper.checkUserIsSendNews(li.getId());
                 //第一次
-                if(!li.getFirstHandle()){
-                    newsHandle(li,adoptionSuccessNewsVO,1);
-                //第二次
-                }else if(!li.getSecondHandle()){
-                    newsHandle(li,adoptionSuccessNewsVO,2);
-                //第三次
-                }else if(!li.getThirdHandle()){
-                    newsHandle(li,adoptionSuccessNewsVO,3);
+                if (!li.getFirstHandle()) {
+                    newsHandle(li, adoptionSuccessNewsVO, 1);
+                    //第二次
+                } else if (!li.getSecondHandle()) {
+                    newsHandle(li, adoptionSuccessNewsVO, 2);
+                    //第三次
+                } else if (!li.getThirdHandle()) {
+                    newsHandle(li, adoptionSuccessNewsVO, 3);
                 }
             });
             log.info("定时任务处理完毕 " + new Date());
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("拉闸，定时任务异常..............");
         }
     }
 
 
-
-    private Integer getNumber(Integer zan){
-        if(zan < 5){
+    private Integer getNumber(Integer zan) {
+        if (zan < 5) {
             return 0;
-        }else if(zan >= 5 && zan < 10){
+        } else if (zan >= 5 && zan < 10) {
             return 1;
-        }else if(zan >= 10 && zan < 20){
+        } else if (zan >= 10 && zan < 20) {
             return 2;
-        }else if(zan >= 20 && zan < 50){
+        } else if (zan >= 20 && zan < 50) {
             return 3;
-        }else if(zan >= 50){
+        } else if (zan >= 50) {
             return 5;
         }
         return 0;
     }
 
-    private void newsHandle(Adoption li,AdoptionSuccessNewsVO adoptionSuccessNewsVO,Integer times){
+    private void newsHandle(Adoption li, AdoptionSuccessNewsVO adoptionSuccessNewsVO, Integer times) {
         long date = new Date().getTime();
-        switch (times){
+        switch (times) {
             case 1:
-                if(date > adoptionSuccessNewsVO.getTime1().getTime()){
+                if (date > adoptionSuccessNewsVO.getTime1().getTime()) {
                     Wrapper<News> newsWrapper = new EntityWrapper<>();
-                    newsWrapper.eq("parentid",li.getAdoptionId()).lt("createtime",adoptionSuccessNewsVO.getTime1());
+                    newsWrapper.eq("parentid", li.getAdoptionId()).lt("createtime", adoptionSuccessNewsVO.getTime1());
                     List<News> news = newsService.selectList(newsWrapper);
                     //到时间没写就减10分信誉分
-                    if(CollectionUtils.isEmpty(news)){
-                        updateUserCredit(li.getUserId(),10,false);
-                    }else {
-                        updateUserCredit(li.getUserId(),5,true);
+                    if (CollectionUtils.isEmpty(news)) {
+                        updateUserCredit(li.getUserId(), 10, false);
+                        //写了就加5分
+                    } else {
+                        updateUserCredit(li.getUserId(), 5, true);
                     }
                 }
                 break;
             case 2:
-                if(date > adoptionSuccessNewsVO.getTime2().getTime()){
+                if (date > adoptionSuccessNewsVO.getTime2().getTime()) {
                     Wrapper<News> newsWrapper = new EntityWrapper<>();
-                    newsWrapper.eq("parentid",li.getAdoptionId()).lt("createtime",adoptionSuccessNewsVO.getTime2());
+                    newsWrapper.eq("parentid", li.getAdoptionId()).lt("createtime", adoptionSuccessNewsVO.getTime2());
                     List<News> news = newsService.selectList(newsWrapper);
                     //到时间没写就减10分信誉分
-                    if(CollectionUtils.isEmpty(news)){
-                        updateUserCredit(li.getUserId(),10,false);
-                    }else {
-                        updateUserCredit(li.getUserId(),5,true);
+                    if (CollectionUtils.isEmpty(news)) {
+                        updateUserCredit(li.getUserId(), 10, false);
+                        //写了就加5分
+                    } else {
+                        updateUserCredit(li.getUserId(), 5, true);
                     }
                 }
                 break;
             case 3:
-                if(date > adoptionSuccessNewsVO.getTime3().getTime()){
+                if (date > adoptionSuccessNewsVO.getTime3().getTime()) {
                     Wrapper<News> newsWrapper = new EntityWrapper<>();
-                    newsWrapper.eq("parentid",li.getAdoptionId()).lt("createtime",adoptionSuccessNewsVO.getTime3());
+                    newsWrapper.eq("parentid", li.getAdoptionId()).lt("createtime", adoptionSuccessNewsVO.getTime3());
                     List<News> news = newsService.selectList(newsWrapper);
                     //到时间没写就减10分信誉分
-                    if(CollectionUtils.isEmpty(news)){
-                        updateUserCredit(li.getUserId(),10,false);
-                    }else {
-                        updateUserCredit(li.getUserId(),5,true);
+                    if (CollectionUtils.isEmpty(news)) {
+                        updateUserCredit(li.getUserId(), 10, false);
+                    } else {
+                        //写了就加5分
+                        updateUserCredit(li.getUserId(), 5, true);
                     }
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    public static int lengthOfLongestSubstring(String s) {
+        char[] chars = s.toCharArray();
+        List<Character> list3 = new ArrayList<>();
+        List<Character> list1 = new ArrayList<>();
+        List<Character> list2 = new ArrayList<>();
+        for (int i = 0; i < chars.length; i++) {
+            if (!list1.contains(chars[i])) {
+                list1.add(chars[i]);
+            } else {
+                if (list1.size() > list2.size()) {
+                    if (list2.size() != 0) {
+                        list2 = new ArrayList<>();
+                    }
+                    list2.addAll(list1);
+                }
+                for (int j = 0; j < list1.indexOf(chars[i]) + 1; j++) {
+                    list3.add(list1.get(j));
+                }
+                list1.removeAll(list3);
+                list1.add(chars[i]);
+                list3 = new ArrayList<>();
+            }
+        }
+        return list2.size() > list1.size() ? list2.size() : list1.size();
+    }
+
+    public static int firstMissingPositive(int[] nums) {
+        if(nums.length == 0){
+            return 1;
+        }
+         for(int i = 0;i<nums.length;i++){
+
+         }
+        return 0;
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(firstMissingPositive(new int[]{4,2,1}));
+
     }
 }

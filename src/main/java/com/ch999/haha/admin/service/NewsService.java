@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface NewsService extends IService<News> {
 
-    Boolean addNews(AddNewsVO addNewsVO, Integer userId, String ip);
+    Integer addNews(AddNewsVO addNewsVO, Integer userId, String ip);
 
     NewsDetailVO getNewsById(Integer id, Integer userId);
 

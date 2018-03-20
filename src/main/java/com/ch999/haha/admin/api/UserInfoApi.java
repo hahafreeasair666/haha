@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,9 @@ public class UserInfoApi {
      * @return
      */
     @PostMapping("/updateUserInfo/{type}/v1")
-    public Result<String> updateAvatar(@PathVariable("type") String type, UserInfoUpdateVO userInfoUpdateVO) {
+    public Result<String> updateAvatar(@PathVariable("type") String type, UserInfoUpdateVO userInfoUpdateVO, HttpServletResponse httpResponse) {
+        //设置ajax跨域可访问
+        httpResponse.addHeader("Access-Control-Allow-Origin","*");
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.error("unLogin", "请登录后再进行操作");
@@ -145,11 +148,11 @@ public class UserInfoApi {
     }
 
     @PostMapping("/test")
-    public Result<Imgs> test(MultipartFile file) {
+    public Result<Imgs> test(MultipartFile file, HttpServletResponse httpResponse) {
+        //设置ajax跨域可访问
+        httpResponse.addHeader("Access-Control-Allow-Origin","*");
         if (file == null) {
             return Result.error("error", "请选择要上传的图片");
-        } else if (!ImgServiceImpl.checkIsImg(file.getOriginalFilename())) {
-            return Result.error("error", "图片格式不正确");
         }
         Imgs imgs = imgService.uploadImg(file);
         if (imgs == null) {
