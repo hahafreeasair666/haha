@@ -105,6 +105,7 @@ public class CreditComponent {
                 } else if (!li.getThirdHandle()) {
                     newsHandle(li, adoptionSuccessNewsVO, 3);
                 }
+                adoptionService.updateById(li);
             });
             log.info("定时任务处理完毕 " + new Date());
         } catch (Exception e) {
@@ -143,6 +144,7 @@ public class CreditComponent {
                     } else {
                         updateUserCredit(li.getUserId(), 5, true);
                     }
+                    li.setFirstHandle(true);
                 }
                 break;
             case 2:
@@ -157,6 +159,7 @@ public class CreditComponent {
                     } else {
                         updateUserCredit(li.getUserId(), 5, true);
                     }
+                    li.setSecondHandle(true);
                 }
                 break;
             case 3:
@@ -171,6 +174,7 @@ public class CreditComponent {
                         //写了就加5分
                         updateUserCredit(li.getUserId(), 5, true);
                     }
+                    li.setThirdHandle(true);
                 }
                 break;
             default:
@@ -204,19 +208,6 @@ public class CreditComponent {
         return list2.size() > list1.size() ? list2.size() : list1.size();
     }
 
-    public static int firstMissingPositive(int[] nums) {
-        if(nums.length == 0){
-            return 1;
-        }
-         for(int i = 0;i<nums.length;i++){
-
-         }
-        return 0;
-    }
 
 
-    public static void main(String[] args) {
-        System.out.println(firstMissingPositive(new int[]{4,2,1}));
-
-    }
 }
