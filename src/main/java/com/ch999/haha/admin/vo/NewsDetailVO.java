@@ -94,6 +94,10 @@ public class NewsDetailVO extends AddNewsVO {
     private Map<String,Object> parentNews;
 
     /**
+     * 反馈公告的id
+     */
+    private Map<String,Object> feedBackNews;
+    /**
      * 文章配图
      */
     private List<String> picMap;

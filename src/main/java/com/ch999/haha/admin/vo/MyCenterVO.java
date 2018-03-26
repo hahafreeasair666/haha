@@ -35,5 +35,10 @@ public class MyCenterVO extends UserCenterVO {
     /**
      * 收养请求
      */
-    private Integer AdoptionRequest;
+    private Integer adoptionRequest;
+
+    /**
+     * 领养成功的人
+     */
+    private Integer adoptionPerson;
 }

@@ -83,7 +83,13 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
                 MyAdoptionVO myAdoptionVO = new MyAdoptionVO();
                 myAdoptionVO.setNewsId(li.getNewsId());
                 myAdoptionVO.setTitle(news.getTitle());
-                myAdoptionVO.setIsSuccess(li.getIsSuccess());
+                //组装领养成功与否状态
+                Adoption adoption = adoptionService.selectOne(new EntityWrapper<Adoption>().eq("adoptionid", li.getNewsId()));
+                if (adoption.getIsAdoption()) {
+                    myAdoptionVO.setIsSuccess(adoption.getUserId().equals(userId) ? 1 : 2);
+                } else {
+                    myAdoptionVO.setIsSuccess(0);
+                }
                 myAdoptionVO.setPic(getOnePicPath(news));
                 list.add(myAdoptionVO);
             });
@@ -93,8 +99,13 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
     }
 
     @Override
-    public Page<AdoptionRequestVO> getAdoptionRequestList(Page<AdoptionRequestVO> page, Integer userId) {
-        List<AdoptionRequestVO> adoptionRequestVOS = adoptionRequestMapper.selectAdoptionRequestList(page,userId);
+    public Page<AdoptionRequestVO> getAdoptionRequestList(Page<AdoptionRequestVO> page, Integer userId, Boolean isRequest) {
+        List<AdoptionRequestVO> adoptionRequestVOS = null;
+        if (isRequest == null || isRequest) {
+            adoptionRequestVOS = adoptionRequestMapper.selectAdoptionRequestList(page, userId);
+        }else {
+            adoptionRequestVOS = adoptionRequestMapper.selectAdoptionPersonList(page,userId);
+        }
         Page<AdoptionRequestVO> pageList = new Page<>();
         pageList.setRecords(adoptionRequestVOS);
         return pageList;
@@ -103,17 +114,17 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
     @Override
     public Boolean handleAdoptionInfo(Integer loginUserId, Integer adoptionId, Integer userId) {
         News news = newsService.selectById(adoptionId);
-        if(news == null || !news.getCreateUserId().equals(loginUserId) || !news.getIsAdoptionNews()){
+        if (news == null || !news.getCreateUserId().equals(loginUserId) || !news.getIsAdoptionNews()) {
             return null;
         }
         Wrapper<Adoption> wrapper = new EntityWrapper<>();
-        wrapper.eq("adoptionid",adoptionId).eq("isadoption",0);
+        wrapper.eq("adoptionid", adoptionId).eq("isadoption", 0);
         List<Adoption> adoptions = adoptionService.selectList(wrapper);
-        if(CollectionUtils.isNotEmpty(adoptions)){
+        if (CollectionUtils.isNotEmpty(adoptions)) {
             Wrapper<AdoptionRequest> wrapper1 = new EntityWrapper<>();
-            wrapper1.eq("newsid",adoptionId).eq("userid",userId);
+            wrapper1.eq("newsid", adoptionId).eq("userid", userId);
             List<AdoptionRequest> adoptionRequests = this.selectList(wrapper1);
-            if(CollectionUtils.isEmpty(adoptionRequests)){
+            if (CollectionUtils.isEmpty(adoptionRequests)) {
                 return null;
             }
             adoptionRequests.get(0).setIsSuccess(true);
@@ -125,9 +136,21 @@ public class AdoptionRequestServiceImpl extends ServiceImpl<AdoptionRequestMappe
         return null;
     }
 
-    private String getOnePicPath(News news){
-        if(news != null && StringUtils.isNotBlank(news.getPicture())){
-          return  imgsService.selectById(news.getPicture().split(",")[0]).getImgUrl();
+    @Override
+    public Boolean cancelAdoptionRequest(Integer userId, Integer adoptionId) {
+        //先校验能不能取消
+        Adoption adoption = adoptionService.selectOne(new EntityWrapper<Adoption>().eq("adoptionid", adoptionId));
+        AdoptionRequest adoptionRequest = this.selectOne(new EntityWrapper<AdoptionRequest>().eq("newsid", adoptionId).eq("userid", userId));
+        if (adoption.getUserId() != null || adoptionRequest == null) {
+            return false;
+        }
+        adoptionRequest.setIsDel(true);
+        return this.updateById(adoptionRequest);
+    }
+
+    private String getOnePicPath(News news) {
+        if (news != null && StringUtils.isNotBlank(news.getPicture())) {
+            return imgsService.selectById(news.getPicture().split(",")[0]).getImgUrl();
         }
         return "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1521114107222&di=44a226a92e386a7e3a11f5a158b4fcfa&imgtype=0&src=http%3A%2F%2Fguangfu.bjx.com.cn%2Fb2b%2FContent%2Fimages%2Fzwtp.gif%3Fbjx_newlogo_v%3D20161230";
     }

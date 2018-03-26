@@ -44,7 +44,7 @@ public class ImgServiceImpl implements ImgService {
             return null;
         }
         imgs.setImgName(fileName);
-        imgs.setImgUrl(imageRes.getFileUrl().replace("localhost", "120.79.160.214"));
+        imgs.setImgUrl("http://" + imageRes.getFileUrl().replace("localhost", "120.79.160.214"));
         imgs.setIsdel(0);
         imgsService.insert(imgs);
         return imgs;

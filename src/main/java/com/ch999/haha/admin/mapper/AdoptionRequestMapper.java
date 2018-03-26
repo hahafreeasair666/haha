@@ -19,4 +19,6 @@ import java.util.List;
 public interface AdoptionRequestMapper extends BaseMapper<AdoptionRequest> {
 
     List<AdoptionRequestVO> selectAdoptionRequestList(Page<AdoptionRequestVO> page,@Param("userId") Integer userId);
+
+    List<AdoptionRequestVO> selectAdoptionPersonList(Page<AdoptionRequestVO> page,@Param("userId") Integer userId);
 }

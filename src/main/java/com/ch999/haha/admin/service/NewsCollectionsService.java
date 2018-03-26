@@ -3,6 +3,7 @@ package com.ch999.haha.admin.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.entity.NewsCollections;
 import com.baomidou.mybatisplus.service.IService;
+import com.ch999.haha.admin.vo.CollectionNewsListVO;
 import com.ch999.haha.admin.vo.NewsListVO;
 import com.ch999.haha.admin.vo.PageVO;
 
@@ -16,6 +17,6 @@ import com.ch999.haha.admin.vo.PageVO;
  */
 public interface NewsCollectionsService extends IService<NewsCollections> {
 
-    PageVO<NewsListVO> getMyCollectionOrReleaseList(Page<NewsListVO> page, Integer userId,Boolean isCollection);
+    PageVO<CollectionNewsListVO> getMyCollectionOrReleaseList(Page<NewsListVO> page, Integer userId, Boolean isCollection);
 
 }

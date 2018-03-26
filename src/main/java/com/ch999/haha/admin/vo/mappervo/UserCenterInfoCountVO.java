@@ -49,5 +49,10 @@ public class UserCenterInfoCountVO {
     /**
      * 别人的领养请求
      */
-    private Integer AdoptionRequest;
+    private Integer adoptionRequest;
+
+    /**
+     * 领养成功的人
+     */
+    private Integer adoptionPerson;
 }

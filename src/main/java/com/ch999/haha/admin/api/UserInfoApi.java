@@ -217,6 +217,23 @@ public class UserInfoApi {
         return Result.success(adoptionRequestService.getMyAdoptionList(loginUser.getId(), current == null ? 1 : current));
     }
 
+    //取消收养请求
+    @PostMapping("/cancelAdoption/v1")
+    public Result<String> cancelAdoption(Integer adoptionId){
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再查看信息", null);
+        }
+        if(adoptionId == null){
+            return Result.error("error","请选择要取消的收养请求");
+        }
+        Boolean aBoolean = adoptionRequestService.cancelAdoptionRequest(loginUser.getId(), adoptionId);
+        if(!aBoolean){
+            return Result.error("error","取消失败");
+        }
+        return Result.success();
+    }
+
     //想领养的人
     @GetMapping("/getAdoptionRequest/v1")
     public Result<PageVO<AdoptionRequestVO>> getAdoptionRequest(Page<AdoptionRequestVO> page) {
@@ -224,7 +241,7 @@ public class UserInfoApi {
         if (loginUser.getId() == null) {
             return Result.unlogin("unLogin", "请登陆后再查看信息", null);
         }
-        Page<AdoptionRequestVO> adoptionRequestList = adoptionRequestService.getAdoptionRequestList(page, loginUser.getId());
+        Page<AdoptionRequestVO> adoptionRequestList = adoptionRequestService.getAdoptionRequestList(page, loginUser.getId(),true);
         PageVO<AdoptionRequestVO> pageVO = new PageVO<>();
         pageVO.setCurrentPage(page.getCurrent());
         pageVO.setTotalPage((int) Math.ceil(page.getTotal() / (double) page.getSize()));
@@ -234,7 +251,7 @@ public class UserInfoApi {
 
     //我的发布或收藏
     @GetMapping("/getMyReleaseOrCollection/v1")
-    public Result<PageVO<NewsListVO>> getMyRelease(Page<NewsListVO> page, Boolean isCollection) {
+    public Result<PageVO<CollectionNewsListVO>> getMyRelease(Page<NewsListVO> page, Boolean isCollection) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.unlogin("unLogin", "请登陆后再查看信息", null);
@@ -260,5 +277,19 @@ public class UserInfoApi {
             return Result.success();
         }
         return Result.error("error", "处理失败请联系开发人员检查代码");
+    }
+
+    @GetMapping("/getAdoptionPersonList/v1")
+    public Result<PageVO<AdoptionRequestVO>> getAdoptionPersonList(Page<AdoptionRequestVO> page){
+        UserInfoBO loginUser = userComponent.getLoginUser();
+        if (loginUser.getId() == null) {
+            return Result.unlogin("unLogin", "请登陆后再查看信息", null);
+        }
+        Page<AdoptionRequestVO> adoptionRequestList = adoptionRequestService.getAdoptionRequestList(page, loginUser.getId(),false);
+        PageVO<AdoptionRequestVO> pageVO = new PageVO<>();
+        pageVO.setCurrentPage(page.getCurrent());
+        pageVO.setTotalPage((int) Math.ceil(page.getTotal() / (double) page.getSize()));
+        pageVO.setList(adoptionRequestList.getRecords());
+        return Result.success(pageVO);
     }
 }

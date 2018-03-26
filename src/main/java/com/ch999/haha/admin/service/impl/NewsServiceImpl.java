@@ -143,6 +143,14 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
                 map.put("title",news.getTitle());
                 newsDetailVO.setParentNews(map);
             }
+            //组装反馈公告id
+            List<News> news = this.selectList(new EntityWrapper<News>().eq("parentid", id).orderBy("createtime",false));
+            if(CollectionUtils.isNotEmpty(news)){
+                Map<String,Object> map = new HashMap<>();
+                map.put("id",news.get(0).getId());
+                map.put("title",news.get(0).getTitle());
+                newsDetailVO.setFeedBackNews(map);
+            }
         }
         return newsDetailVO;
     }

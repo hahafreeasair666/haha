@@ -10,6 +10,7 @@ import com.ch999.haha.admin.service.NewsCollectionsService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ch999.haha.admin.service.NewsService;
 import com.ch999.haha.admin.service.UserInfoService;
+import com.ch999.haha.admin.vo.CollectionNewsListVO;
 import com.ch999.haha.admin.vo.NewsListVO;
 import com.ch999.haha.admin.vo.PageVO;
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +42,8 @@ public class NewsCollectionsServiceImpl extends ServiceImpl<NewsCollectionsMappe
 
 
     @Override
-    public PageVO<NewsListVO> getMyCollectionOrReleaseList(Page<NewsListVO> page, Integer userId,Boolean isCollection) {
-        List<NewsListVO> listVOS = newsCollectionsMapper.selectCollectionList(page, userId,isCollection);
+    public PageVO<CollectionNewsListVO> getMyCollectionOrReleaseList(Page<NewsListVO> page, Integer userId,Boolean isCollection) {
+        List<CollectionNewsListVO> listVOS = newsCollectionsMapper.selectCollectionList(page, userId,isCollection);
         listVOS.forEach(li->{
             if(StringUtils.isNotBlank(li.getImgPath())){
                 li.setImgPath(imgsService.selectById(li.getImgPath().split(",")[0]).getImgUrl());
@@ -50,7 +51,7 @@ public class NewsCollectionsServiceImpl extends ServiceImpl<NewsCollectionsMappe
                 li.setImgPath("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1521114107222&di=44a226a92e386a7e3a11f5a158b4fcfa&imgtype=0&src=http%3A%2F%2Fguangfu.bjx.com.cn%2Fb2b%2FContent%2Fimages%2Fzwtp.gif%3Fbjx_newlogo_v%3D20161230");
             }
         });
-        PageVO<NewsListVO> pageVO = new PageVO<>();
+        PageVO<CollectionNewsListVO> pageVO = new PageVO<>();
         pageVO.setCurrentPage(page.getCurrent());
         pageVO.setTotalPage((int) Math.ceil(page.getTotal() / (double) page.getSize()));
         pageVO.setList(listVOS);

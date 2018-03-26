@@ -26,5 +26,5 @@ public class MyAdoptionVO {
     /**
      * 是否成功收养
      */
-    private Boolean isSuccess;
+    private Integer isSuccess;
 }

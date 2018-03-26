@@ -71,6 +71,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userCenterVO.setMyCredit(userInfo.getCreditInfo().get("creditNum")!=null?(int)userInfo.getCreditInfo().get("creditNum"):0);
         userCenterVO.setAvatar(userInfo.getUserInfo().getPicPath());
         userCenterVO.setMyRelease(userInfoCount.getReleases());
+        userCenterVO.setAdoptionPerson(userInfoCount.getAdoptionPerson());
         return userCenterVO;
     }
 

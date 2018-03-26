@@ -2,43 +2,46 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ch999.haha.admin.mapper.NewsCollectionsMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.NewsCollections">
-		<id column="id" property="id" />
-		<result column="userid" property="userid" />
-		<result column="newid" property="newid" />
-		<result column="isdel" property="isdel" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ch999.haha.admin.entity.NewsCollections">
+        <id column="id" property="id"/>
+        <result column="userid" property="userid"/>
+        <result column="newid" property="newid"/>
+        <result column="isdel" property="isdel"/>
+    </resultMap>
 
-	<select id="selectCollectionList" resultType="com.ch999.haha.admin.vo.NewsListVO">
-		SELECT
-	n.id,
-	n.title,
-	n.createplace AS place,
-	u.username AS createUser,
-	u.picpath AS avatar,
-	n.createtime AS createTime,
-	n.picture AS imgPath
-FROM
-	news n
-LEFT JOIN userinfo u on u.id = n.createuserid
-WHERE
-	<if test="isCollection == true">
-		n.id IN (
-		SELECT
-		nc.newid
-		FROM
-		newscollections nc
-		WHERE
-		nc.userid = #{userId}
-		AND nc.isdel = 0
-		)
-	</if>
+    <select id="selectCollectionList" resultType="com.ch999.haha.admin.vo.CollectionNewsListVO">
+        SELECT
+        n.id,
+        n.title,
+        n.createplace AS place,
+        u.username AS createUser,
+        u.picpath AS avatar,
+        n.createtime AS createTime,
+        <if test="isCollection == true">
+            n.createuserid AS createUserId,
+        </if>
+        n.picture AS imgPath
+        FROM
+        news n
+        LEFT JOIN userinfo u on u.id = n.createuserid
+        WHERE
+        <if test="isCollection == true">
+            n.id IN (
+            SELECT
+            nc.newid
+            FROM
+            newscollections nc
+            WHERE
+            nc.userid = #{userId}
+            AND nc.isdel = 0
+            )
+        </if>
 
-    <if test="isCollection == false">
-		n.createuserid = #{userId}
-	</if>
-	AND n.isdel = 0
-	</select>
+        <if test="isCollection == false">
+            n.createuserid = #{userId}
+        </if>
+        AND n.isdel = 0
+    </select>
 
 </mapper>

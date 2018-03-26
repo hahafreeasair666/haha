@@ -24,8 +24,10 @@ public interface AdoptionRequestService extends IService<AdoptionRequest> {
 
     PageVO<MyAdoptionVO> getMyAdoptionList(Integer userId,Integer currentPage);
 
-    Page<AdoptionRequestVO> getAdoptionRequestList(Page<AdoptionRequestVO> page, Integer userId);
+    Page<AdoptionRequestVO> getAdoptionRequestList(Page<AdoptionRequestVO> page, Integer userId,Boolean isRequest);
 
     Boolean handleAdoptionInfo(Integer loginUserId,Integer adoptionId,Integer userId);
+
+    Boolean cancelAdoptionRequest(Integer userId,Integer adoptionId);
 
 }

@@ -48,4 +48,28 @@ ORDER BY
 	newsId
     </select>
 
+    <select id="selectAdoptionPersonList" resultType="com.ch999.haha.admin.vo.AdoptionRequestVO">
+        SELECT
+	t.id AS newsId,
+	t.title,
+	ui.id AS userId,
+	ui.username AS userName,
+	ui.picpath AS avatar,
+	ui.mobile
+FROM
+	(
+		SELECT
+			n.id,
+			n.title,
+			ad.userid
+		FROM
+			adoption ad
+		LEFT JOIN news n ON ad.adoptionid = n.id
+		WHERE
+			n.createuserid = #{userId}
+		AND ad.isadoption = 1
+	) t
+LEFT JOIN userinfo ui ON t.userid = ui.id
+    </select>
+
 </mapper>

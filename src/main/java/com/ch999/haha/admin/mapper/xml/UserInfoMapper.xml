@@ -62,7 +62,14 @@ OR adop.AdoptionRequest = '' THEN
 	0
 WHEN adop.AdoptionRequest IS NOT NULL THEN
 	adop.AdoptionRequest
-END AS AdoptionRequest
+END AS AdoptionRequest,
+CASE
+WHEN lycg.adoptionPerson IS NULL
+OR lycg.adoptionPerson = '' THEN
+	0
+WHEN lycg.adoptionPerson IS NOT NULL THEN
+	lycg.adoptionPerson
+END AS adoptionPerson
 FROM
 	(
 		SELECT
@@ -134,6 +141,17 @@ LEFT JOIN (
 		) nuid LEFT JOIN adoptionrequest adr on adr.newsid = nuid.id
  WHERE adr.userid !='' and adr.isdel = 0
 ) adop on adop.createuserid = t.createuserid
+LEFT JOIN (
+	SELECT
+		count(1) AS adoptionPerson,
+		n.createuserid
+	FROM
+		adoption ad
+	LEFT JOIN news n ON ad.adoptionid = n.id
+	WHERE
+		n.createuserid = #{userId}
+	AND ad.isadoption = 1
+) lycg on lycg.createuserid = t.createuserid
 	</select>
 
 </mapper>
