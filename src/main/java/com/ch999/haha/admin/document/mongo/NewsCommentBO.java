@@ -94,6 +94,11 @@ public class NewsCommentBO {
      */
     private List<Reply> replies;
 
+    /**
+     * 是否需要展开查看回复，回复大于3此值为true
+     */
+    private Boolean isNeedOpen;
+
 
     @Getter
     @Setter

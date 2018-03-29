@@ -91,6 +91,9 @@ public class NewsCommentServiceImpl implements NewsCommentService {
                         .filter(de -> !de.getIsDel())
                         .sorted(Comparator.comparing(NewsCommentBO.Reply::getZan).reversed()).collect(Collectors.toList())
                         .subList(0, 3));
+                li.setIsNeedOpen(true);
+            }else {
+                li.setIsNeedOpen(false);
             }
             //评论字段赋值
             UserInfo userInfo = userInfoService.selectById(li.getUserId());

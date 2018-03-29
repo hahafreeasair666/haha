@@ -68,6 +68,7 @@ FROM
 		WHERE
 			n.createuserid = #{userId}
 		AND ad.isadoption = 1
+		AND ad.isdel = 0
 	) t
 LEFT JOIN userinfo ui ON t.userid = ui.id
     </select>
