@@ -56,7 +56,7 @@ public class UserInfoApi {
     @GetMapping("/getUserCenterInfo/v1")
     public Result<UserCenterVO> getUserCenterInfo(Integer userId) {
         UserInfoBO loginUser = userComponent.getLoginUser();
-        if (loginUser.getId() == null) {
+        if (loginUser.getId() == null ) {
             return Result.unlogin("unLogin", "请登陆后再进行操作", null);
         }
         if (userId != null && !loginUser.getId().equals(userId)) {
@@ -78,9 +78,7 @@ public class UserInfoApi {
      * @return
      */
     @PostMapping("/updateUserInfo/{type}/v1")
-    public Result<String> updateAvatar(@PathVariable("type") String type, UserInfoUpdateVO userInfoUpdateVO, HttpServletResponse httpResponse) {
-        //设置ajax跨域可访问
-        httpResponse.addHeader("Access-Control-Allow-Origin","*");
+    public Result<String> updateAvatar(@PathVariable("type") String type, UserInfoUpdateVO userInfoUpdateVO) {
         UserInfoBO loginUser = userComponent.getLoginUser();
         if (loginUser.getId() == null) {
             return Result.error("unLogin", "请登录后再进行操作");
@@ -148,9 +146,7 @@ public class UserInfoApi {
     }
 
     @PostMapping("/test")
-    public Result<Imgs> test(MultipartFile file, HttpServletResponse httpResponse) {
-        //设置ajax跨域可访问
-        httpResponse.addHeader("Access-Control-Allow-Origin","*");
+    public Result<Imgs> test(MultipartFile file) {
         if (file == null) {
             return Result.error("error", "请选择要上传的图片");
         }

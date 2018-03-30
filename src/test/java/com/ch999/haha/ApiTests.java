@@ -45,6 +45,7 @@ public class ApiTests {
     @Resource
     private CreditComponent creditComponent;
 
+
     @Test
     public void test() {
         /*UserCenterInfoCountVO userInfoCount = userInfoService.getUserInfoCount(1);
@@ -71,4 +72,8 @@ public class ApiTests {
         creditComponent.timedTaskOfZan();
     }
 
+    @Test
+    public void test4(){
+        userInfoBORepository.deleteAll();
+    }
 }
