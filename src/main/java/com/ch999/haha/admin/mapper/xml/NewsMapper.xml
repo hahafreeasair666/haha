@@ -57,7 +57,9 @@ and n.isdel = 0
         n.picture as imgPath,
         n.createtime as createTime,
         n.createplace as place,
-        u.username as createUser
+        u.username as createUser,
+        u.id as userId,
+        u.picpath as avatar
         FROM
         news n
         LEFT JOIN userinfo u ON n.createuserid = u.id
