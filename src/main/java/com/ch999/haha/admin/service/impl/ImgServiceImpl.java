@@ -1,20 +1,21 @@
 package com.ch999.haha.admin.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.ImgsService;
 import com.ch999.haha.common.HttpClientUtil;
 import com.ch999.haha.common.ImageRes;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.File;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * 处理图片的服务类
@@ -29,13 +30,28 @@ public class ImgServiceImpl implements ImgService {
 
     private static final String IMGUPLOAG_URL = "/submit";
 
+    private ReentrantLock lock = new ReentrantLock();
+
     @Resource
     private ImgsService imgsService;
 
     @Override
     public Imgs uploadImg(MultipartFile file) {
+        File file1 = null;
+        try {
+            if(file.getSize() >= 1024*100) {
+                lock.lock();
+                log.info("图片压缩上锁");
+                Thumbnails.of(file.getInputStream()).size(200,200).toFile("test.jpg");
+                file1 = new File("test.jpg");
+                log.info("压缩完毕解锁");
+                lock.unlock();
+            }
+        }catch (Exception e){
+            log.error("压缩图片异常");
+        }
         Imgs imgs = new Imgs();
-        String s = HttpClientUtil.uploadFile(IMGSERVER, IMGUPLOAG_URL, file);
+        String s = HttpClientUtil.uploadFile(IMGSERVER, IMGUPLOAG_URL, file,file1);
         ImageRes imageRes = JSON.parseObject(s, ImageRes.class);
         String fid = imageRes.getFid();
         String fileName = imageRes.getFileName();
@@ -68,4 +84,17 @@ public class ImgServiceImpl implements ImgService {
         return false;
     }
 
+    /*private MultipartFile createImg(File file){
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile(file.getName(), inputStream);
+            //注意这里面填啥，MultipartFile里面对应的参数就有啥，比如我只填了name，则
+            //MultipartFile.getName()只能拿到name参数，但是originalFilename是空。
+            return multipartFile;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }*/
 }

@@ -31,8 +31,9 @@ public class SimpleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
-        // m版和app一样的
         response.addHeader("Access-Control-Allow-Origin","*");
+        response.addHeader("Access-Control-Allow-Methods","GET,POST,OPTION");
+        response.addHeader("Access-Control-Allow-Headers","authorization,Content-Type,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers");
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         logger.info("添加跨域请求许可");

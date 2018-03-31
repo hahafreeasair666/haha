@@ -223,7 +223,7 @@ public class HttpClientUtil {
      *            请求地址
      * @return
      */
-    public static String uploadFile(String rootURL, String reqURL, MultipartFile multipartFile) {
+    public static String uploadFile(String rootURL, String reqURL, MultipartFile multipartFile,File file) {
 
         String info = null;
         InputStream inputStream = null;
@@ -263,7 +263,11 @@ public class HttpClientUtil {
 
             byte[] data = new byte[1024];
             int len = 0;
-            inputStream = multipartFile.getInputStream();
+            if(file == null) {
+                inputStream = multipartFile.getInputStream();
+            }else {
+                inputStream = new FileInputStream(file);
+            }
             while ((len = inputStream.read(data)) > -1) {
                 outputStream.write(data, 0, len);
             }

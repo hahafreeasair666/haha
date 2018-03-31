@@ -62,6 +62,9 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
     @Resource
     private AdoptionFeedBackService adoptionFeedBackService;
 
+    @Resource
+    private AdoptionRequestService adoptionRequestService;
+
     @Override
     public Integer addNews(AddNewsVO addNewsVO, Integer userId, String ip) {
         News news = new News();
@@ -228,6 +231,12 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         if (!news.getCreateUserId().equals(userId)) {
             return false;
         }
+        Wrapper<Adoption> wrapper1 = new EntityWrapper<>();
+        wrapper1.eq("adoptionid",id).eq("isadoption",1);
+        //已被领养的公告不能删除
+        if(CollectionUtils.isNotEmpty(adoptionService.selectList(wrapper1))){
+            return false;
+        }
         boolean a = this.deleteById(id);
         //删除公告要删除相应的关注记录
         if (a) {
@@ -235,6 +244,10 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
             wrapper.eq("newid", id);
             newsCollectionsService.delete(wrapper);
         }
+        //相关收养请求也要删除
+        Wrapper<AdoptionRequest> wrapper = new EntityWrapper<>();
+        wrapper.eq("newsid",id);
+        adoptionRequestService.delete(wrapper);
         return a;
     }
 

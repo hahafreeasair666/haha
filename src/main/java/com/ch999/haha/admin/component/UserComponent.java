@@ -13,6 +13,7 @@ import com.ch999.haha.admin.repository.redis.UserInfoBORepository;
 import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.vo.RegisterVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -26,6 +27,7 @@ import java.util.UUID;
  * @author hahalala
  */
 @Component
+@Slf4j
 public class UserComponent {
 
     private static final String USERID_PIX = "GetUserInfo:";
@@ -80,6 +82,7 @@ public class UserComponent {
     private Integer getUserId() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader(AUTHORIZATION);
+        log.info("token :" + token);
         UserBO user = userBORepository.findOne(USERID_PIX + token);
         return user == null ? -1 : user.getUserId();
     }

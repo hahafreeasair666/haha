@@ -7,6 +7,7 @@ import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.entity.UserInfo;
 import com.ch999.haha.admin.service.UserInfoService;
 import com.ch999.haha.admin.vo.RegisterVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/login/api")
+@Slf4j
 public class LoginApi {
 
     @Resource
@@ -45,6 +48,7 @@ public class LoginApi {
         Integer userId1 = userInfoService.loginByMobileOrUserName("username", loginInfo, pwd);
         Integer userId2 = userInfoService.loginByMobileOrUserName("mobile", loginInfo, pwd);
         if (userId1 == null && userId2 == null) {
+            log.error("登录失败：" +loginInfo +" " + pwd );
             return Result.error("loginError", "登录失败，用户名或密码错误");
         } else {
             String authorization = userComponent.getAuthorization(userId1 == null ? userId2 : userId1, isLogonFree == null ? false : isLogonFree);
@@ -54,6 +58,7 @@ public class LoginApi {
             map.put("userId",userInfo.getId());
             map.put("userName",userInfo.getUsername());
             map.put("avatar",userInfo.getPicPath());
+            log.info("登录成功");
             return Result.success("success", "登录成功", map);
         }
     }

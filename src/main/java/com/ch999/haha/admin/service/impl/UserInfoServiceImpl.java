@@ -14,6 +14,7 @@ import com.ch999.haha.admin.vo.MyCenterVO;
 import com.ch999.haha.admin.vo.OtherCenterVO;
 import com.ch999.haha.admin.vo.UserCenterVO;
 import com.ch999.haha.admin.vo.mappervo.UserCenterInfoCountVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
  * @since 2018-01-25
  */
 @Service
+@Slf4j
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
     @Resource

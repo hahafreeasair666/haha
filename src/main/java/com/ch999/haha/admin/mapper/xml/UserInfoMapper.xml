@@ -108,9 +108,11 @@ LEFT JOIN (
 		count(1) AS collections
 	FROM
 		newscollections nc
+	LEFT JOIN news ss ON ss.id = nc.newid
 	WHERE
 		nc.userid = #{userId}
-	AND isdel = 0
+	AND nc.isdel = 0
+AND ss.isdel = 0
 ) c ON c.userid = t.createuserid
 LEFT JOIN (
 	SELECT

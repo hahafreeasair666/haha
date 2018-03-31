@@ -157,7 +157,7 @@ public class NewsApi {
         } else if (aBoolean) {
             return Result.success();
         }
-        return Result.error("error", "该公告不是您发布的，您无权删除");
+        return Result.error("error", "动物已被领养，该公告不能删除！");
     }
 
     @PostMapping("/iWantToAdoption/v1")
