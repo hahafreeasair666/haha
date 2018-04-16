@@ -1,6 +1,7 @@
 package com.ch999.haha.admin.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.ch999.haha.admin.entity.Imgs;
 import com.ch999.haha.admin.service.ImgService;
 import com.ch999.haha.admin.service.ImgsService;
@@ -30,7 +31,7 @@ public class ImgServiceImpl implements ImgService {
 
     private static final String IMGUPLOAG_URL = "/submit";
 
-    private ReentrantLock lock = new ReentrantLock();
+    //private ReentrantLock lock = new ReentrantLock();
 
     @Resource
     private ImgsService imgsService;
@@ -40,18 +41,21 @@ public class ImgServiceImpl implements ImgService {
         File file1 = null;
         try {
             if(file.getSize() >= 1024*100) {
-                lock.lock();
-                log.info("图片压缩上锁");
-                Thumbnails.of(file.getInputStream()).size(200,200).toFile("test.jpg");
-                file1 = new File("test.jpg");
-                log.info("压缩完毕解锁");
-                lock.unlock();
+                //lock.lock();
+                log.info("图片压缩");
+                String str = IdWorker.get32UUID();
+                Thumbnails.of(file.getInputStream()).size(200,200).toFile(str+".jpg");
+                file1 = new File(str+".jpg");
+                log.info("压缩完毕");
+                //lock.unlock();
             }
         }catch (Exception e){
             log.error("压缩图片异常");
         }
         Imgs imgs = new Imgs();
         String s = HttpClientUtil.uploadFile(IMGSERVER, IMGUPLOAG_URL, file,file1);
+        file1.delete();
+        log.info("上传完毕，删除压缩图片");
         ImageRes imageRes = JSON.parseObject(s, ImageRes.class);
         String fid = imageRes.getFid();
         String fileName = imageRes.getFileName();

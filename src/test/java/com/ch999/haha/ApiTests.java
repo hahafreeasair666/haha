@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.ch999.haha.admin.component.CreditComponent;
 import com.ch999.haha.admin.document.mongo.MongoTestBO;
+import com.ch999.haha.admin.document.redis.UserBO;
 import com.ch999.haha.admin.document.redis.UserInfoBO;
 import com.ch999.haha.admin.entity.News;
 import com.ch999.haha.admin.repository.redis.UserBORepository;
@@ -74,6 +75,8 @@ public class ApiTests {
 
     @Test
     public void test4(){
-        userInfoBORepository.deleteAll();
+        //userInfoBORepository.deleteAll();
+        userInfoBORepository.findAll();
+        System.out.println();
     }
 }

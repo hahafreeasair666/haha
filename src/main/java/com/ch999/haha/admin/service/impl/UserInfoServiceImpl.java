@@ -85,6 +85,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userCenterVO.setFollows(userInfoCount.getFollow());
         userCenterVO.setFans(userInfoCount.getFans());
         UserInfoBO one = userInfoBORepository.findOne(userId);
+        log.error("用户查询失败，redis可能被清楚数据 id:"+ userId);
         if(one == null){
             return null;
         }

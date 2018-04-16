@@ -75,6 +75,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         news.setIsDel(false);
         news.setZan(0);
         news.setPicture(addNewsVO.getPic());
+        news.setParentId(addNewsVO.getAdoptionId());
         String format = String.format(IP_URL, ip);
         String s = HttpClientUtil.get(format);
         Map map = JSONObject.parseObject(s, Map.class);
@@ -248,6 +249,8 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
         Wrapper<AdoptionRequest> wrapper = new EntityWrapper<>();
         wrapper.eq("newsid",id);
         adoptionRequestService.delete(wrapper);
+        //如果是反馈公告相应监督也要删除
+        adoptionFeedBackService.delete(new EntityWrapper<AdoptionFeedBack>().eq("newsid",id));
         return a;
     }
 

@@ -13,13 +13,13 @@
 
     <select id="selectUserInfoCount" resultType="com.ch999.haha.admin.vo.mappervo.UserCenterInfoCountVO">
 		SELECT
-	t.createuserid AS userid,
+	t.id AS userid,
 	CASE
-WHEN t.zancount IS NULL
-OR t.zancount = '' THEN
+WHEN nt.zancount IS NULL
+OR nt.zancount = '' THEN
 	0
-WHEN t.zancount IS NOT NULL THEN
-	t.zancount
+WHEN nt.zancount IS NOT NULL THEN
+	nt.zancount
 END AS zan,
  CASE
 WHEN f.fans IS NULL
@@ -43,11 +43,11 @@ WHEN c.collections IS NOT NULL THEN
 	c.collections
 END AS collections,
  CASE
-WHEN t.releases IS NULL
-OR t.releases = '' THEN
+WHEN nt.releases IS NULL
+OR nt.releases = '' THEN
 	0
-WHEN t.releases IS NOT NULL THEN
-	t.releases
+WHEN nt.releases IS NOT NULL THEN
+	nt.releases
 END AS releases,
  CASE
 WHEN ad.myAdoption IS NULL
@@ -71,6 +71,14 @@ WHEN lycg.adoptionPerson IS NOT NULL THEN
 	lycg.adoptionPerson
 END AS adoptionPerson
 FROM
+(
+	SELECT
+		id
+	FROM
+		userinfo
+	WHERE
+		id = #{userId}
+)t LEFT JOIN
 	(
 		SELECT
 			createuserid,
@@ -81,7 +89,7 @@ FROM
 		WHERE
 			createuserid = #{userId}
 		AND isdel = 0
-	) t
+	) nt on t.id = nt.createuserid
 LEFT JOIN (
 	SELECT
 		uf.userid2,
@@ -91,7 +99,7 @@ LEFT JOIN (
 	WHERE
 		uf.userid2 = #{userId}
 	AND isdel = 0
-) f ON t.createuserid = f.userid2
+) f ON t.id = f.userid2
 LEFT JOIN (
 	SELECT
 		uf.userid1,
@@ -101,29 +109,31 @@ LEFT JOIN (
 	WHERE
 		uf.userid1 = #{userId}
 	AND isdel = 0
-) g ON t.createuserid = g.userid1
+) g ON t.id = g.userid1
 LEFT JOIN (
 	SELECT
 		nc.userid,
 		count(1) AS collections
 	FROM
 		newscollections nc
-	LEFT JOIN news ss ON ss.id = nc.newid
+  LEFT JOIN news ss ON ss.id = nc.newid
 	WHERE
 		nc.userid = #{userId}
 	AND nc.isdel = 0
 AND ss.isdel = 0
-) c ON c.userid = t.createuserid
+) c ON c.userid = t.id
 LEFT JOIN (
 	SELECT
 		adr.userid,
 		count(1) AS myAdoption
 	FROM
 		adoptionrequest adr
+LEFT JOIN news ss on ss.id = adr.newsid
 	WHERE
 		adr.userid = #{userId}
 	AND adr.isdel = 0
-) ad ON ad.userid = t.createuserid
+and ss.isdel = 0
+) ad ON ad.userid = t.id
 LEFT JOIN (
 	SELECT
 		nuid.createuserid,
@@ -142,7 +152,7 @@ LEFT JOIN (
 			AND ap.isadoption = 0
 		) nuid LEFT JOIN adoptionrequest adr on adr.newsid = nuid.id
  WHERE adr.userid !='' and adr.isdel = 0
-) adop on adop.createuserid = t.createuserid
+) adop on adop.createuserid = t.id
 LEFT JOIN (
 	SELECT
 		count(1) AS adoptionPerson,
@@ -153,7 +163,7 @@ LEFT JOIN (
 	WHERE
 		n.createuserid = #{userId}
 	AND ad.isadoption = 1
-) lycg on lycg.createuserid = t.createuserid
+) lycg on lycg.createuserid = t.id
 	</select>
 
 </mapper>

@@ -58,8 +58,3 @@ mybatis:
 logging:
   config: classpath:log4j2-dev.xml
 
-
-eureka:
-  instance:
-    preferIpAddress: true
-    ip-address: 120.79.160.244

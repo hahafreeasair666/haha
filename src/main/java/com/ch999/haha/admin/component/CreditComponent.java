@@ -82,7 +82,8 @@ public class CreditComponent {
         try {
             //对收养反馈公告的赞数量进行发布者信用积分改变
             Wrapper<AdoptionFeedBack> wrapper = new EntityWrapper<>();
-            adoptionFeedBackService.selectList(wrapper).forEach(li -> {
+            List<AdoptionFeedBack> adoptionFeedBacks = adoptionFeedBackService.selectList(wrapper);
+            adoptionFeedBacks.forEach(li -> {
                 News news = newsService.selectById(li.getNewsId());
                 if (news.getZan() > li.getLastTimeZan()) {
                     updateUserCredit(news.getCreateUserId(), getNumber(news.getZan() - li.getLastTimeZan()), true);
@@ -153,7 +154,7 @@ public class CreditComponent {
                     newsWrapper.eq("parentid", li.getAdoptionId()).lt("createtime", adoptionSuccessNewsVO.getTime2());
                     List<News> news = newsService.selectList(newsWrapper);
                     //到时间没写就减10分信誉分
-                    if (CollectionUtils.isEmpty(news)) {
+                    if (CollectionUtils.isEmpty(news) || news.size()< 2) {
                         updateUserCredit(li.getUserId(), 10, false);
                         //写了就加5分
                     } else {
@@ -168,7 +169,7 @@ public class CreditComponent {
                     newsWrapper.eq("parentid", li.getAdoptionId()).lt("createtime", adoptionSuccessNewsVO.getTime3());
                     List<News> news = newsService.selectList(newsWrapper);
                     //到时间没写就减10分信誉分
-                    if (CollectionUtils.isEmpty(news)) {
+                    if (CollectionUtils.isEmpty(news) || news.size() < 3) {
                         updateUserCredit(li.getUserId(), 10, false);
                     } else {
                         //写了就加5分

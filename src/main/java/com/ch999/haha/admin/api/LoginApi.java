@@ -1,7 +1,5 @@
 package com.ch999.haha.admin.api;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.ch999.common.util.vo.Result;
 import com.ch999.haha.admin.component.UserComponent;
 import com.ch999.haha.admin.entity.UserInfo;
@@ -16,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.*;
 
 
 /**
