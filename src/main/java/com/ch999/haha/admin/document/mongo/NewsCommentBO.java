@@ -234,10 +234,4 @@ public class NewsCommentBO {
        }
     }
 
-    /**
-     * 设置当前用户是否已对评论回复点过赞
-     */
-    public static void setIsPraised(NewsCommentBO newsCommentBO, CommentZanBO commentZanBO){
-
-    }
 }

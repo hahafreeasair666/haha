@@ -1,6 +1,5 @@
 package com.ch999.haha.admin.service;
 
-import com.ch999.haha.admin.document.mongo.NewsCommentBO;
 import com.ch999.haha.admin.vo.CommentReplyVO;
 import com.ch999.haha.admin.vo.PageVO;
 import com.ch999.haha.common.PageableVo;
@@ -35,7 +34,7 @@ public interface NewsCommentService {
      * @param userId 用户id
      * @return 返回
      */
-    PageVO<NewsCommentBO> getNewsCommentList(Integer newsId, Pageable pageable, Integer userId);
+    PageVO getNewsCommentList(Integer newsId, Pageable pageable, Integer userId);
 
     /**
      * 回复列表
